@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import morgan from "morgan";
 import supabase from "./config/supabaseClient.js";
 
@@ -9,57 +10,64 @@ import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
-// Universal CORS & Preflight Middleware (ensures CORS headers on ALL requests, OPTIONS, and errors)
-app.use((req, res, next) => {
-  const origin = req.headers.origin;
+const allowedOrigins = [
+  "https://you-matter-seven.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:3000",
+  "http://localhost:4173",
+  "http://127.0.0.1:5173",
+];
 
-  const allowedOrigins = [
-    "https://you-matter-seven.vercel.app",
-    "http://localhost:5173",
-    "http://localhost:3000",
-    "http://localhost:4173",
-    "http://127.0.0.1:5173",
-  ];
+if (process.env.FRONTEND_URL) {
+  process.env.FRONTEND_URL.split(',').forEach((url) => {
+    const clean = url.trim().replace(/\/$/, "");
+    if (clean && !allowedOrigins.includes(clean)) {
+      allowedOrigins.push(clean);
+    }
+  });
+}
 
-  if (process.env.FRONTEND_URL) {
-    process.env.FRONTEND_URL.split(',').forEach((url) => {
-      const clean = url.trim().replace(/\/$/, "");
-      if (clean && !allowedOrigins.includes(clean)) {
-        allowedOrigins.push(clean);
-      }
-    });
-  }
+if (process.env.ALLOWED_ORIGINS) {
+  process.env.ALLOWED_ORIGINS.split(',').forEach((url) => {
+    const clean = url.trim().replace(/\/$/, "");
+    if (clean && !allowedOrigins.includes(clean)) {
+      allowedOrigins.push(clean);
+    }
+  });
+}
 
-  if (process.env.ALLOWED_ORIGINS) {
-    process.env.ALLOWED_ORIGINS.split(',').forEach((url) => {
-      const clean = url.trim().replace(/\/$/, "");
-      if (clean && !allowedOrigins.includes(clean)) {
-        allowedOrigins.push(clean);
-      }
-    });
-  }
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin) return callback(null, true);
+    const cleanOrigin = origin.replace(/\/$/, "");
+    if (allowedOrigins.includes(cleanOrigin) || allowedOrigins.some(o => cleanOrigin.endsWith(o.replace(/^https?:\/\//, '')))) {
+      return callback(null, true);
+    }
+    // Allow any Vercel domain in production to prevent CORS blockage
+    if (cleanOrigin.endsWith(".vercel.app")) {
+      return callback(null, true);
+    }
+    return callback(null, true);
+  },
+  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
+  allowedHeaders: [
+    "Content-Type",
+    "Authorization",
+    "apikey",
+    "X-Client-Info",
+    "x-user-id",
+    "x-user-name",
+    "x-user-email",
+    "X-Requested-With",
+    "Accept"
+  ],
+  credentials: true,
+  optionsSuccessStatus: 200
+};
 
-  const reqOrigin = origin ? origin.replace(/\/$/, "") : "";
-  if (origin && (allowedOrigins.includes(reqOrigin) || allowedOrigins.some(o => reqOrigin.endsWith(o.replace(/^https?:\/\//, ''))))) {
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  } else if (origin) {
-    // Fallback in production so browser never blocks valid frontend requests
-    res.setHeader("Access-Control-Allow-Origin", origin);
-  } else {
-    res.setHeader("Access-Control-Allow-Origin", "*");
-  }
-
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, x-user-id, x-user-name");
-  res.setHeader("Access-Control-Allow-Credentials", "true");
-
-  // Immediate HTTP 200 response for browser preflight OPTIONS requests
-  if (req.method === "OPTIONS") {
-    return res.status(200).end();
-  }
-
-  next();
-});
+// Mount CORS before express.json(), routes, and rate limiters
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
