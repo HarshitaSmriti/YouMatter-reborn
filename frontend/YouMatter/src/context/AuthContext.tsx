@@ -6,6 +6,8 @@ interface AuthContextType {
   session: any;
   loading: boolean;
   isAuthenticated: boolean;
+  isGuest: boolean;
+  isGuestOrAuth: boolean;
   signOut: () => Promise<void>;
   refreshAuth: () => Promise<void>;
 }
@@ -15,6 +17,8 @@ const AuthContext = createContext<AuthContextType>({
   session: null,
   loading: true,
   isAuthenticated: false,
+  isGuest: false,
+  isGuestOrAuth: false,
   signOut: async () => {},
   refreshAuth: async () => {},
 });
@@ -23,6 +27,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<any>(null);
   const [session, setSession] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [isGuest, setIsGuest] = useState(false);
 
   const initAuth = async () => {
     try {
@@ -32,6 +37,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (currentSession) {
         setSession(currentSession);
         setUser(currentSession.user);
+        setIsGuest(false);
         localStorage.setItem("token", currentSession.access_token);
         const name =
           currentSession.user.user_metadata?.full_name ||
@@ -41,31 +47,25 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         localStorage.setItem("userName", name);
         localStorage.setItem("youmatter_user_name", name);
       } else {
-        // Clear any stale or legacy demo-guest-token from localStorage
+        // Check if Guest token exists
         const token = localStorage.getItem("token");
         if (token && token.startsWith("demo-guest-token")) {
-          if (import.meta.env.DEV && import.meta.env.VITE_ENABLE_DEV_GUEST === "true") {
-            const guestName = localStorage.getItem("youmatter_user_name") || localStorage.getItem("userName") || "Guest User";
-            const guestObj = { id: "guest", user_metadata: { full_name: guestName } };
-            setSession({ access_token: token, user: guestObj });
-            setUser(guestObj);
-          } else {
-            // Remove legacy demo token so real Supabase authentication is enforced in production
-            localStorage.removeItem("token");
-            localStorage.removeItem("userName");
-            localStorage.removeItem("youmatter_user_name");
-            setSession(null);
-            setUser(null);
-          }
+          const guestName = localStorage.getItem("youmatter_user_name") || localStorage.getItem("userName") || "Guest User";
+          const guestObj = { id: "guest", user_metadata: { full_name: guestName } };
+          setSession({ access_token: token, user: guestObj });
+          setUser(guestObj);
+          setIsGuest(true);
         } else {
           setSession(null);
           setUser(null);
+          setIsGuest(false);
         }
       }
     } catch (err) {
       console.warn("Auth initialization notice:", err);
       setSession(null);
       setUser(null);
+      setIsGuest(false);
     } finally {
       setLoading(false);
     }
@@ -78,6 +78,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (newSession) {
         setSession(newSession);
         setUser(newSession.user);
+        setIsGuest(false);
         localStorage.setItem("token", newSession.access_token);
         const name =
           newSession.user.user_metadata?.full_name ||
@@ -93,13 +94,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         }
       } else {
         const token = localStorage.getItem("token");
-        if (token && token.startsWith("demo-guest-token") && (!import.meta.env.DEV || import.meta.env.VITE_ENABLE_DEV_GUEST !== "true")) {
-          localStorage.removeItem("token");
-          localStorage.removeItem("userName");
-          localStorage.removeItem("youmatter_user_name");
+        if (!token || !token.startsWith("demo-guest-token")) {
+          setSession(null);
+          setUser(null);
+          setIsGuest(false);
         }
-        setSession(null);
-        setUser(null);
       }
       setLoading(false);
     });
@@ -116,6 +115,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem("youmatter_user_name");
     setSession(null);
     setUser(null);
+    setIsGuest(false);
     try {
       await supabase.auth.signOut();
     } catch (err) {
@@ -125,10 +125,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  // Production authentication requires a valid Supabase session
-  const isAuthenticated = import.meta.env.DEV && import.meta.env.VITE_ENABLE_DEV_GUEST === "true"
-    ? !!session
-    : !!session && !!user && user.id !== "guest";
+  // Registered Supabase user session
+  const isAuthenticated = !!session && !!user && user.id !== "guest";
+  
+  // Guest session or registered user session
+  const isGuestOrAuth = isAuthenticated || isGuest;
 
   return (
     <AuthContext.Provider
@@ -137,6 +138,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         session,
         loading,
         isAuthenticated,
+        isGuest,
+        isGuestOrAuth,
         signOut,
         refreshAuth: initAuth,
       }}

@@ -69,7 +69,6 @@ function Login() {
     localStorage.setItem("token", `demo-guest-token-${Date.now()}`);
     localStorage.setItem("userName", finalName);
     localStorage.setItem("youmatter_user_name", finalName);
-    localStorage.setItem("youmatter_guest_pass_used", "true");
     setGuestModalOpen(false);
     await refreshAuth();
     navigate("/home", { replace: true });
