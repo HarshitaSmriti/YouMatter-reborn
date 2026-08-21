@@ -1,6 +1,6 @@
 const getBaseApiUrl = () => {
   const envUrl = typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL;
-  if (!envUrl) return "http://localhost:3000/api/v1";
+  if (!envUrl) return "https://youmatter-reborn.onrender.com/api/v1";
   const trimmed = envUrl.replace(/\/$/, "");
   return trimmed.endsWith("/api/v1") ? trimmed : `${trimmed}/api/v1`;
 };
