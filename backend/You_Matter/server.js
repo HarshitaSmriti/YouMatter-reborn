@@ -75,6 +75,6 @@ wss.on("connection", (ws) => {
   ws.on("close", () => console.log("WebSocket client disconnected"));
 });
 
-server.listen(PORT, () => {
+server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server & WebSockets running on port ${PORT}`);
 });

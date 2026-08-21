@@ -1,0 +1,12 @@
+{
+  "name": "youmatter-backend-root",
+  "version": "1.0.0",
+  "description": "YouMatter Backend Production Entry Point for Render",
+  "main": "You_Matter/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node You_Matter/server.js",
+    "dev": "nodemon You_Matter/server.js",
+    "postinstall": "cd You_Matter && npm install"
+  }
+}
