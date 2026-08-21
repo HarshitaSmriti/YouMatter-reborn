@@ -25,8 +25,8 @@ const toneClasses: Record<string, string> = {
 
 function Logo() {
   return (
-    <a
-      href="#home"
+    <Link
+      to="/"
       className="flex items-center gap-3"
     >
       <div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#6548ee] text-white shadow-[0_10px_25px_rgba(101,72,238,0.22)]">
@@ -39,7 +39,7 @@ function Logo() {
       <h1 className="text-[1.9rem] font-black text-[#5d41ef]">
         {landingData.navbar.logo}
       </h1>
-    </a>
+    </Link>
   );
 }
 

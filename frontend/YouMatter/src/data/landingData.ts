@@ -16,7 +16,7 @@ const landingData = {
 
     buttonText: "Get Started",
     links: [
-      { name: "Home", path: "#home" },
+      { name: "Home", path: "/" },
       { name: "Features", path: "#features" },
       { name: "How It Works", path: "#how-it-works" },
       { name: "About Us", path: "#about" },
