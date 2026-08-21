@@ -1,6 +1,6 @@
 import genAI from "../services/gemini.js";
 
-function fetchWithTimeout(promise, ms = 8000) {
+function fetchWithTimeout(promise, ms = 12000) {
   return Promise.race([
     promise,
     new Promise((_, reject) =>
@@ -15,8 +15,6 @@ export class GeminiProvider {
     this.modelsToTry = [
       "gemini-2.0-flash",
       "gemini-1.5-flash",
-      "gemini-1.5-flash-8b",
-      "gemini-1.5-pro",
     ];
   }
 
