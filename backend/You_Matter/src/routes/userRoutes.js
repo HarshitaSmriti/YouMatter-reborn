@@ -1,0 +1,62 @@
+import express from 'express';
+
+import {
+  createUser,
+  getUsers,
+  saveMessage,
+  getConversation,
+  clearConversation,
+  addMood,
+  getMood,
+  addDiary,
+  getDiary,
+  createCrisis,
+  deleteDiary,
+  updateDiary,
+  uploadMedicalReport,
+  forgotPassword
+} from '../controllers/userController.js';
+
+import { optionalVerifyUser, verifyUser } from '../middleware/authMiddleware.js';
+import { chatLimiter, strictLimiter } from "../middleware/rateLimiter.js";
+import { upload } from "../middleware/uploadMiddleware.js";
+
+const router = express.Router();
+
+// ================= USERS =================
+router.post('/users', verifyUser, createUser);
+router.get('/users', verifyUser, getUsers);
+
+// ================= FORGOT PASSWORD =================
+router.post(
+  '/forgot-password',
+  forgotPassword
+);
+
+// ================= CHAT =================
+router.post('/message', optionalVerifyUser, chatLimiter, saveMessage);
+router.get('/conversation', verifyUser, getConversation);
+router.delete('/conversation/clear', optionalVerifyUser, clearConversation);
+
+// ================= MOOD =================
+router.post('/mood', verifyUser, strictLimiter, addMood);
+router.get('/mood', verifyUser, strictLimiter, getMood);
+
+// ================= DIARY =================
+router.post('/diary', verifyUser, addDiary);
+router.get('/diary', verifyUser, getDiary);
+router.delete('/diary/:id', verifyUser, deleteDiary);
+router.patch('/diary/:id', verifyUser, updateDiary);
+
+// ================= CRISIS =================
+router.post('/crisis', verifyUser, strictLimiter, createCrisis);
+
+// ================= MEDICAL REPORT =================
+router.post(
+  '/upload-report',
+  verifyUser,
+  upload.single('report'),
+  uploadMedicalReport
+);
+
+export default router;

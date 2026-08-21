@@ -1,16 +1,20 @@
 {
-  "name": "ai",
+  "name": "youmatter-ai",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "AI Engine for YouMatter",
+  "type": "module",
+  "main": "src/server.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
+    "test-ai": "node src/testConnection.js"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Harshita Smriti",
+  "license": "MIT",
   "dependencies": {
     "@google/genai": "^2.15.0",
+    "@google/generative-ai": "^0.24.1",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",

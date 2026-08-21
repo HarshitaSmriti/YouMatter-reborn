@@ -1,0 +1,122 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Nunito:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 240 20% 97%;
+    --foreground: 240 20% 15%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 240 20% 15%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 240 20% 15%;
+
+    --primary: 252 60% 55%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 60% 92%;
+    --secondary-foreground: 240 20% 20%;
+
+    --muted: 240 15% 93%;
+    --muted-foreground: 240 10% 50%;
+
+    --accent: 340 60% 90%;
+    --accent-foreground: 340 40% 30%;
+
+    --border: 240 15% 88%;
+    --input: 240 15% 88%;
+    --ring: 252 60% 55%;
+
+    --radius: 1rem;
+
+    --lavender: 252 60% 55%;
+    --lavender-light: 252 60% 92%;
+    --lavender-glow: 252 80% 70%;
+    --sky: 210 70% 60%;
+    --sky-light: 210 70% 92%;
+    --blush: 340 60% 70%;
+    --blush-light: 340 60% 92%;
+    --aqua: 175 50% 50%;
+    --aqua-light: 175 50% 92%;
+    --success: 150 50% 45%;
+    --success-light: 150 50% 92%;
+
+    --sidebar-background: 252 30% 96%;
+    --sidebar-foreground: 240 20% 20%;
+  }
+
+  /* 🌙 DARK MODE — FIXED PROPERLY */
+  .dark {
+    --background: 235 35% 8%;
+    --foreground: 0 0% 96%;
+
+    --card: 235 30% 12%;
+    --card-foreground: 0 0% 96%;
+
+    --popover: 235 30% 12%;
+    --popover-foreground: 0 0% 96%;
+
+    --primary: 252 80% 70%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 235 20% 18%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 235 15% 16%;
+    --muted-foreground: 235 10% 70%;
+
+    --accent: 340 40% 25%;
+    --accent-foreground: 340 60% 85%;
+
+    --border: 235 15% 22%;
+    --input: 235 15% 22%;
+    --ring: 252 80% 70%;
+
+    --sidebar-background: 235 25% 10%;
+    --sidebar-foreground: 0 0% 96%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-heading;
+  }
+}
+
+@layer components {
+  /* 🔥 FIXED GLASS EFFECT */
+  .glass-card {
+    @apply bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-lg;
+  }
+
+  .glass-card-strong {
+    @apply bg-white/80 dark:bg-white/10 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-xl;
+  }
+
+  /* 🔥 BETTER BACKGROUND */
+  .cloud-bg {
+    background:
+      radial-gradient(ellipse 80% 60% at 20% 80%, hsl(252 70% 65% / 0.15) 0%, transparent 70%),
+      radial-gradient(ellipse 60% 50% at 80% 20%, hsl(210 70% 65% / 0.12) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 50% 50%, hsl(340 60% 70% / 0.08) 0%, transparent 70%),
+      hsl(var(--background));
+  }
+
+  .gradient-text {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(var(--lavender))] via-[hsl(var(--sky))] to-[hsl(var(--blush))];
+  }
+
+  .btn-pill {
+    @apply rounded-full;
+  }
+}

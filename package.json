@@ -1,0 +1,15 @@
+{
+  "name": "youmatter-monorepo",
+  "version": "1.0.0",
+  "description": "YouMatter Mental Health App Root Workspace",
+  "private": true,
+  "scripts": {
+    "dev": "concurrently -k -p \"[{name}]\" -n \"AI,BACKEND,FRONTEND\" -c \"magenta,blue,cyan\" \"npm run dev:ai\" \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:ai": "cd ai && npm run dev",
+    "dev:backend": "cd backend/You_Matter && npm run dev",
+    "dev:frontend": "cd frontend/YouMatter && npm run dev"
+  },
+  "devDependencies": {
+    "concurrently": "^10.0.5"
+  }
+}
