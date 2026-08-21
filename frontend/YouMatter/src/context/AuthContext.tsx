@@ -65,7 +65,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   useEffect(() => {
     initAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, newSession) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, newSession) => {
       if (newSession) {
         setSession(newSession);
         setUser(newSession.user);
@@ -77,6 +77,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           "User";
         localStorage.setItem("userName", name);
         localStorage.setItem("youmatter_user_name", name);
+
+        // If returning from OAuth where Supabase put tokens in hash (#access_token=...), strip hash and force /home
+        if (window.location.hash.includes("access_token=") || window.location.search.includes("code=")) {
+          window.history.replaceState(null, "", "/home");
+          window.dispatchEvent(new PopStateEvent("popstate"));
+        }
       } else {
         const token = localStorage.getItem("token");
         if (!token || !token.startsWith("demo-guest-token")) {
