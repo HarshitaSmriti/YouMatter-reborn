@@ -148,22 +148,28 @@ export default function Chat() {
 
   useEffect(() => {
     const loadBackendHistory = async () => {
-      const isNewChat = sessionStorage.getItem("youmatter_new_chat_active");
-      if (isNewChat === "true") {
-        sessionStorage.removeItem("youmatter_new_chat_active");
-        return;
-      }
       try {
         const res = await api.get("/conversation");
         const historyData = res.data?.data;
         if (Array.isArray(historyData) && historyData.length > 0) {
-          const parsed = historyData.map((item: any) => ({
+          const parsed: Message[] = historyData.map((item: any) => ({
             sender: item.sender || "ai",
             text: item.message || item.text || "",
             timestamp: item.created_at ? new Date(item.created_at).getTime() : Date.now(),
           }));
-          setMessages(parsed);
-          setHasInteracted(true);
+
+          const firstUserText = parsed.find((m) => m.sender === "user")?.text || "Previous Conversation";
+          const dbSession: ChatSession = {
+            id: "db_history_session",
+            title: firstUserText.length > 32 ? firstUserText.substring(0, 32) + "..." : firstUserText,
+            timestamp: parsed[0]?.timestamp || Date.now(),
+            messages: parsed,
+          };
+
+          setSessions((prev) => {
+            if (prev.some((s) => s.id === "db_history_session")) return prev;
+            return [dbSession, ...prev];
+          });
         }
       } catch (err) {
         console.warn("Backend conversation fetch notice:", err);

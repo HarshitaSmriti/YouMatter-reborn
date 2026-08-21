@@ -18,7 +18,7 @@ export class GeminiProvider {
     ];
   }
 
-  async generate({ promptText, systemInstruction, maxOutputTokens = 200 }) {
+  async generate({ promptText, systemInstruction, maxOutputTokens = 1000 }) {
     let lastError = null;
 
     for (const modelName of this.modelsToTry) {
