@@ -79,10 +79,15 @@ function Login() {
   const signInWithGoogle = async () => {
     setErrorMsg("");
     try {
+      const origin = window.location.origin;
+      const redirectTo = `${origin}/auth/callback`;
+      console.log("[OAuth] Current origin:", origin);
+      console.log("[OAuth] Google redirectTo:", redirectTo);
+
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: "https://you-matter-seven.vercel.app/auth/callback",
+          redirectTo,
         },
       });
       if (error) setErrorMsg(error.message);
