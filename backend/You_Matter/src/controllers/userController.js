@@ -110,7 +110,15 @@ const getDisplayName = (userData, authUser) =>
 
 const getAiReply = async (user_id, message, userData, authUser) => {
   try {
-    const aiUrl = process.env.AI_CHAT_URL || "http://localhost:5000/chat";
+    const rawAiUrl = process.env.AI_CHAT_URL || "http://localhost:5000/chat";
+    let aiUrl = rawAiUrl.trim();
+    if (!aiUrl.endsWith("/chat")) {
+      aiUrl = aiUrl.replace(/\/+$/, "") + "/chat";
+    }
+
+    const hostName = aiUrl.replace(/^https?:\/\//, '').split('/')[0];
+    console.log(`[AI_TRACE] Attempting AI request to host=${hostName}, endpoint=/chat`);
+
     const userName = getDisplayName(userData, authUser);
     const guardianEmail = getGuardianEmail(userData);
 
@@ -126,6 +134,8 @@ const getAiReply = async (user_id, message, userData, authUser) => {
     };
 
     const aiResponse = await axios.post(aiUrl, aiPayload, { timeout: aiTimeoutMs });
+    console.log(`[AI_TRACE] AI response received: status=${aiResponse.status}, hasReply=${Boolean(aiResponse.data?.reply)}`);
+
     const replyText =
       aiResponse.data?.reply ||
       aiResponse.data?.response ||
@@ -140,13 +150,14 @@ const getAiReply = async (user_id, message, userData, authUser) => {
       };
     }
 
+    console.warn(`[AI_TRACE] AI response missing reply property, fallback used`);
     return {
       ok: true,
       reply: "I'm right here with you and listening. How are you feeling right now?",
       error: aiResponse.data?.error || null,
     };
   } catch (error) {
-    console.error("AI chat request failed:", error.message);
+    console.error(`[AI_TRACE] AI request failed: type=${error.code || 'error'}, message=${error.message}`);
     return {
       ok: true,
       reply: "I'm right here with you and listening. Take a gentle breath and tell me what's on your mind.",
