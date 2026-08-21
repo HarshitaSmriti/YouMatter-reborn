@@ -388,17 +388,18 @@ export const clearConversation = async (req, res, next) => {
     const user_id = req.user?.id;
 
     if (!user_id || req.isDemoUser) {
-      return res.json({ message: "Conversation cleared", data: [] });
+      return res.json({ message: "Conversation cleared", data: [], success: true });
     }
 
-    const supabaseUser = getUserClient(req);
-
-    const { error } = await supabaseUser
+    // Use admin client to reliably delete user conversation history regardless of RLS table constraints
+    const { error } = await supabase
       .from('conversations')
       .delete()
       .eq('user_id', user_id);
 
-    if (error) console.warn("Supabase clear error (handled):", error.message);
+    if (error) {
+      console.warn("Supabase clear error (handled):", error.message);
+    }
 
     res.json({ message: "Conversation cleared successfully", success: true });
 

@@ -148,6 +148,11 @@ export default function Chat() {
 
   useEffect(() => {
     const loadBackendHistory = async () => {
+      const isNewChat = sessionStorage.getItem("youmatter_new_chat_active");
+      if (isNewChat === "true") {
+        sessionStorage.removeItem("youmatter_new_chat_active");
+        return;
+      }
       try {
         const res = await api.get("/conversation");
         const historyData = res.data?.data;
@@ -264,7 +269,9 @@ export default function Chat() {
   };
 
   const startNewChat = async () => {
-    persistSession(messages);
+    if (messages.length > 0) {
+      persistSession(messages);
+    }
     const newId = generateSessionId();
     setCurrentSessionId(newId);
     if (userId) localStorage.setItem(getUserCurrentKey(userId), newId);
@@ -272,6 +279,7 @@ export default function Chat() {
     setHasInteracted(false);
     setViewingSession(null);
     setHistoryOpen(false);
+    sessionStorage.setItem("youmatter_new_chat_active", "true");
     try {
       await api.post("/conversation/new", {});
     } catch (err) {
@@ -282,12 +290,14 @@ export default function Chat() {
   const clearChatHistory = async () => {
     if (!window.confirm("Are you sure you want to clear your chat history?")) return;
     setMessages([]);
+    setSessions([]);
     setHasInteracted(false);
     setViewingSession(null);
     if (userId) {
       localStorage.removeItem(getUserSessionKey(userId));
+      localStorage.removeItem(getUserCurrentKey(userId));
     }
-    setSessions((prev) => prev.filter((s) => s.id !== currentSessionId));
+    sessionStorage.removeItem("youmatter_new_chat_active");
     try {
       await api.delete("/conversation/clear");
     } catch (err) {
