@@ -42,15 +42,8 @@ function App() {
 
   return (
     <Routes>
-      {/* PUBLIC LANDING PAGE (Renders Landing for unauthenticated users, redirects authenticated users to /home) */}
-      <Route
-        path="/"
-        element={
-          <PublicRoute>
-            <Landing />
-          </PublicRoute>
-        }
-      />
+      {/* PUBLIC LANDING PAGE (ALWAYS renders Landing.tsx regardless of auth state) */}
+      <Route path="/" element={<Landing />} />
       <Route path="/landing" element={<Landing />} />
       <Route
         path="/login"
