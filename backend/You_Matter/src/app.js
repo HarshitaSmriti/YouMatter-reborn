@@ -104,7 +104,9 @@ app.get('/api/v1', (req, res) => {
 
 // Main routes
 app.use('/api/v1', userRoutes);
+app.use('/api/v1/user', userRoutes);
 app.use('/api/v1', guardianRoutes);
+app.use('/api/v1/user', guardianRoutes);
 
 // 404 handler
 app.use((req, res) => {

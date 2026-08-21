@@ -248,8 +248,15 @@ export default function Chat() {
     const aiPlaceholder: Message = { sender: "ai", message: "", text: "", timestamp: aiMessageId };
     setMessages((prev) => [...prev, aiPlaceholder]);
 
-    const apiBaseUrl = (import.meta.env.VITE_API_URL || "https://youmatter-reborn.onrender.com/api/v1").replace(/\/+$/, "");
-    const token = localStorage.getItem("youmatter_token") || localStorage.getItem("supabase_token");
+    let rawBase = (import.meta.env.VITE_API_URL || "https://youmatter-reborn.onrender.com/api/v1").trim().replace(/\/+$/, "");
+    if (rawBase.endsWith("/user")) {
+      rawBase = rawBase.replace(/\/user$/, "");
+    }
+    if (!rawBase.endsWith("/api/v1")) {
+      rawBase = `${rawBase}/api/v1`;
+    }
+    const apiBaseUrl = rawBase;
+    const token = localStorage.getItem("token") || localStorage.getItem("youmatter_token") || localStorage.getItem("supabase_token");
 
     try {
       const response = await fetch(`${apiBaseUrl}/message?stream=true`, {
