@@ -1,9 +1,41 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Mail, Heart } from "lucide-react";
+import supabase from "../config/supabaseClient";
 
 function ForgotPassword() {
   const [email, setEmail] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
+  const [errorMsg, setErrorMsg] = useState("");
+
+  const handleResetPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      setErrorMsg("Please enter your email address.");
+      return;
+    }
+    setLoading(true);
+    setErrorMsg("");
+    setMessage("");
+
+    try {
+      const origin = window.location.origin;
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${origin}/auth/callback`,
+      });
+
+      if (error) {
+        setErrorMsg(error.message);
+      } else {
+        setMessage("Password reset link sent! Please check your email inbox.");
+      }
+    } catch (err: any) {
+      setErrorMsg("Failed to send reset link. Please check your network connection.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <main className="min-h-screen bg-[#fbfaff] flex items-center justify-center px-6">
@@ -40,8 +72,20 @@ function ForgotPassword() {
           and we’ll send you a password reset link.
         </p>
 
+        {errorMsg && (
+          <div className="mt-4 rounded-2xl bg-red-50 border border-red-200 p-4 text-sm text-red-600">
+            {errorMsg}
+          </div>
+        )}
+
+        {message && (
+          <div className="mt-4 rounded-2xl bg-green-50 border border-green-200 p-4 text-sm text-green-700">
+            {message}
+          </div>
+        )}
+
         {/* FORM */}
-        <form className="mt-10 space-y-6">
+        <form className="mt-8 space-y-6" onSubmit={handleResetPassword}>
           <div>
             <label className="block mb-3 font-semibold text-[#2c2747]">
               Email Address
@@ -61,6 +105,7 @@ function ForgotPassword() {
                   setEmail(e.target.value)
                 }
                 className="w-full rounded-2xl border border-[#e9e4ff] bg-[#faf7ff] py-4 pl-14 pr-5 outline-none transition focus:border-[#7c4dff]"
+                required
               />
             </div>
           </div>
@@ -68,9 +113,10 @@ function ForgotPassword() {
           {/* BUTTON */}
           <button
             type="submit"
-            className="w-full rounded-2xl bg-[#7c4dff] py-4 text-lg font-bold text-white shadow-[0_18px_34px_rgba(124,77,255,0.2)] transition hover:bg-[#7042f5]"
+            disabled={loading}
+            className="w-full rounded-2xl bg-[#7c4dff] py-4 text-lg font-bold text-white shadow-[0_18px_34px_rgba(124,77,255,0.2)] transition hover:bg-[#7042f5] disabled:opacity-50"
           >
-            Send Reset Link
+            {loading ? "Sending..." : "Send Reset Link"}
           </button>
         </form>
 
