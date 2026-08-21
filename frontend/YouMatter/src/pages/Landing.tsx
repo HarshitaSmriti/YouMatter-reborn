@@ -151,17 +151,8 @@ function ChatPreview() {
 }
 
 function Landing() {
-  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const ContactIcon = landingData.contact.icon;
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    const isGuest = localStorage.getItem("youmatter_guest_pass_used");
-    if (token || isGuest) {
-      navigate("/home", { replace: true });
-    }
-  }, [navigate]);
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#fbfaff] text-[#090d2c]">
