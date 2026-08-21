@@ -82,7 +82,7 @@ function Login() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: "https://you-matter-seven.vercel.app/home",
+          redirectTo: "https://you-matter-seven.vercel.app/auth/callback",
         },
       });
       if (error) setErrorMsg(error.message);
