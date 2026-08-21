@@ -1,6 +1,6 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import { GoogleGenAI } from "@google/genai";
 import { GEMINI_API_KEY } from "../config/env.js";
 
-const genAI = new GoogleGenerativeAI(GEMINI_API_KEY || "DUMMY_KEY");
+const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY || "DUMMY_KEY" });
 
-export default genAI;
+export default ai;

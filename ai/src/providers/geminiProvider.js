@@ -1,6 +1,6 @@
-import genAI from "../services/gemini.js";
+import ai from "../services/gemini.js";
 
-function fetchWithTimeout(promise, ms = 12000) {
+function fetchWithTimeout(promise, ms = 15000) {
   return Promise.race([
     promise,
     new Promise((_, reject) =>
@@ -13,31 +13,28 @@ export class GeminiProvider {
   constructor() {
     this.name = "GeminiProvider";
     this.modelsToTry = [
-      "gemini-1.5-flash-latest",
-      "gemini-2.0-flash-exp",
-      "gemini-1.5-flash",
-      "gemini-1.5-pro-latest",
-      "gemini-pro"
+      "gemini-3.6-flash",
+      "gemini-3.7-flash",
     ];
   }
 
-  async generate({ promptText, systemInstruction, maxOutputTokens = 250, temperature = 0.7 }) {
+  async generate({ promptText, systemInstruction }) {
     let lastError = null;
 
     for (const modelName of this.modelsToTry) {
       try {
-        const model = genAI.getGenerativeModel({
-          model: modelName,
-          systemInstruction,
-          generationConfig: {
-            maxOutputTokens,
-            temperature,
-            topP: 0.9,
-          },
-        });
+        const response = await fetchWithTimeout(
+          ai.models.generateContent({
+            model: modelName,
+            contents: promptText,
+            config: {
+              systemInstruction,
+            },
+          }),
+          15000
+        );
 
-        const result = await fetchWithTimeout(model.generateContent(promptText), 12000);
-        const responseText = result.response?.text();
+        const responseText = response?.text;
 
         if (responseText && responseText.trim()) {
           return { text: responseText.trim(), modelUsed: modelName };
@@ -53,9 +50,14 @@ export class GeminiProvider {
 
   async healthCheck() {
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
-      const result = await fetchWithTimeout(model.generateContent("ping"), 5000);
-      return result.response?.text() ? true : false;
+      const response = await fetchWithTimeout(
+        ai.models.generateContent({
+          model: "gemini-3.6-flash",
+          contents: "ping",
+        }),
+        5000
+      );
+      return response?.text ? true : false;
     } catch (err) {
       return false;
     }
