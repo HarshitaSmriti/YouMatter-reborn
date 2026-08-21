@@ -1,6 +1,6 @@
 import ai from "../services/gemini.js";
 
-function fetchWithTimeout(promise, ms = 15000) {
+function fetchWithTimeout(promise, ms = 25000) {
   return Promise.race([
     promise,
     new Promise((_, reject) =>
@@ -18,7 +18,7 @@ export class GeminiProvider {
     ];
   }
 
-  async generate({ promptText, systemInstruction }) {
+  async generate({ promptText, systemInstruction, maxOutputTokens = 200 }) {
     let lastError = null;
 
     for (const modelName of this.modelsToTry) {
@@ -29,9 +29,10 @@ export class GeminiProvider {
             contents: promptText,
             config: {
               systemInstruction,
+              maxOutputTokens,
             },
           }),
-          15000
+          25000
         );
 
         const responseText = response?.text;
@@ -55,7 +56,7 @@ export class GeminiProvider {
           model: "gemini-3.6-flash",
           contents: "ping",
         }),
-        5000
+        10000
       );
       return response?.text ? true : false;
     } catch (err) {

@@ -224,13 +224,19 @@ export default function Chat() {
     const content = (textToSend || message).trim();
     if (!content || isLoading) return;
 
+    sessionStorage.removeItem("youmatter_new_chat_active");
     setMessage("");
     setHasInteracted(true);
     if (viewingSession) setViewingSession(null);
 
     const userMessage: Message = { sender: "user", message: content, text: content, timestamp: Date.now() };
-    const updatedMessages = [...messages, userMessage];
-    setMessages(updatedMessages);
+    
+    // Atomically preserve user message in state immediately
+    let currentHistory: Message[] = [];
+    setMessages((prev) => {
+      currentHistory = [...prev, userMessage];
+      return currentHistory;
+    });
     setIsLoading(true);
 
     if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
@@ -246,7 +252,7 @@ export default function Chat() {
     try {
       const res = await api.post("/message", {
         message: content,
-        history: updatedMessages.slice(-8).map((m) => ({
+        history: currentHistory.slice(-6).map((m) => ({
           role: (m.sender || "").toLowerCase() === "user" ? "user" : "model",
           text: m.message || m.text || "",
         })),
@@ -274,12 +280,14 @@ export default function Chat() {
     }
     const newId = generateSessionId();
     setCurrentSessionId(newId);
-    if (userId) localStorage.setItem(getUserCurrentKey(userId), newId);
+    if (userId) {
+      localStorage.setItem(getUserCurrentKey(userId), newId);
+    }
+    sessionStorage.setItem("youmatter_new_chat_active", "true");
     setMessages([]);
     setHasInteracted(false);
     setViewingSession(null);
     setHistoryOpen(false);
-    sessionStorage.setItem("youmatter_new_chat_active", "true");
     try {
       await api.post("/conversation/new", {});
     } catch (err) {
