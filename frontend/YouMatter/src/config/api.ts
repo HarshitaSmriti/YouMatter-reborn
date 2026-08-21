@@ -1,9 +1,9 @@
 import axios from "axios";
 
 const getBaseApiUrl = () => {
-  const envUrl = (import.meta as any).env?.VITE_API_URL;
-  if (!envUrl) return "https://youmatter-reborn.onrender.com/api/v1";
-  const trimmed = envUrl.replace(/\/$/, "");
+  const envUrl = import.meta.env.VITE_API_URL;
+  const rawUrl = envUrl && typeof envUrl === "string" && envUrl.trim() ? envUrl.trim() : "https://youmatter-reborn.onrender.com";
+  const trimmed = rawUrl.replace(/\/$/, "");
   return trimmed.endsWith("/api/v1") ? trimmed : `${trimmed}/api/v1`;
 };
 
