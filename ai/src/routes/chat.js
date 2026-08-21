@@ -25,18 +25,24 @@ router.post("/", async (req, res) => {
     const response = await processMessage(activeUserId, message);
     res.json(response);
   } catch (err) {
-    console.error("AI Route Error:", err);
+    console.error("[AI Chat Route Error]:", err.message || err);
+
+    const isQuota = err.code === "AI_QUOTA_EXHAUSTED" || err.status === 429;
+    const statusCode = err.status || (isQuota ? 429 : 500);
+    const userMessage = isQuota
+      ? "AI quota is currently exhausted. Please try again later."
+      : "I'm having trouble responding right now. Please try again in a moment.";
 
     if (req.headers.accept === "text/event-stream" || req.query.stream === "true") {
-      res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+      res.write(`data: ${JSON.stringify({ error: userMessage, code: err.code || "AI_ERROR" })}\n\n`);
       res.write(`data: [DONE]\n\n`);
       return res.end();
     }
 
-    res.status(500).json({
+    res.status(statusCode).json({
       success: false,
-      reply: "I'm having trouble responding right now. Please try again in a moment.",
-      error: err.message,
+      reply: userMessage,
+      error: err.code || "AI_ERROR",
     });
   }
 });
