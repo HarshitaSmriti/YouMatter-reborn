@@ -13,10 +13,10 @@ export class GeminiProvider {
   constructor() {
     this.name = "GeminiProvider";
     this.modelsToTry = [
-      "gemini-3.5-flash-lite",
-      "gemini-flash-lite-latest",
-      "gemini-2.5-flash",
-      "gemini-flash-latest",
+      "gemini-2.0-flash",
+      "gemini-1.5-flash",
+      "gemini-1.5-flash-8b",
+      "gemini-1.5-pro",
     ];
   }
 
@@ -35,7 +35,7 @@ export class GeminiProvider {
           },
         });
 
-        const result = await fetchWithTimeout(model.generateContent(promptText), 8000);
+        const result = await fetchWithTimeout(model.generateContent(promptText), 12000);
         const responseText = result.response?.text();
 
         if (responseText && responseText.trim()) {
@@ -52,8 +52,8 @@ export class GeminiProvider {
 
   async healthCheck() {
     try {
-      const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash-lite" });
-      const result = await fetchWithTimeout(model.generateContent("ping"), 3000);
+      const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash" });
+      const result = await fetchWithTimeout(model.generateContent("ping"), 5000);
       return result.response?.text() ? true : false;
     } catch (err) {
       return false;
