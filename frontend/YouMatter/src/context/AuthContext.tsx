@@ -100,17 +100,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     setLoading(true);
-    try {
-      await supabase.auth.signOut();
-    } catch (err) {
-      console.warn("Sign out notice:", err);
-    }
     localStorage.removeItem("token");
     localStorage.removeItem("userName");
     localStorage.removeItem("youmatter_user_name");
     setSession(null);
     setUser(null);
-    setLoading(false);
+    try {
+      await supabase.auth.signOut();
+    } catch (err) {
+      console.warn("Sign out notice:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const guestToken = localStorage.getItem("token");

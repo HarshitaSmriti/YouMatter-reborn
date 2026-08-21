@@ -42,8 +42,15 @@ function App() {
 
   return (
     <Routes>
-      {/* PUBLIC LANDING PAGE (Always accessible at / and /landing) */}
-      <Route path="/" element={<Landing />} />
+      {/* PUBLIC LANDING PAGE (Renders Landing for unauthenticated users, redirects authenticated users to /home) */}
+      <Route
+        path="/"
+        element={
+          <PublicRoute>
+            <Landing />
+          </PublicRoute>
+        }
+      />
       <Route path="/landing" element={<Landing />} />
       <Route
         path="/login"
