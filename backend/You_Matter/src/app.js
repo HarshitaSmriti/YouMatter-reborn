@@ -11,6 +11,7 @@ import { errorHandler } from "./middleware/errorHandler.js";
 const app = express();
 
 const allowedOrigins = [
+  "https://you-matter-reborn-641a.vercel.app",
   "https://you-matter-seven.vercel.app",
   "http://localhost:5173",
   "http://localhost:3000",
