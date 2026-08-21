@@ -63,7 +63,7 @@ function Signup() {
         await refreshAuth();
       }
 
-      navigate("/consent", { replace: true });
+      navigate("/home", { replace: true });
     } catch (err: any) {
       console.error("Signup error:", err);
       setErrorMsg("Registration failed. Please check your network and Supabase configuration.");

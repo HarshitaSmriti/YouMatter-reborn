@@ -64,7 +64,7 @@ function Sidebar() {
 
   const handleSignOut = async () => {
     await authSignOut();
-    navigate("/login", { replace: true });
+    navigate("/", { replace: true });
   };
 
   return (

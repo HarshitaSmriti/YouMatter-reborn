@@ -12,7 +12,6 @@ import Breathing from "./pages/Breathing";
 import Games from "./pages/Games";
 import Support from "./pages/Support";
 import Settings from "./pages/Settings";
-import ConsentForm from "./pages/ConsentForm";
 import AuthCallback from "./pages/AuthCallback";
 import NotFound from "./pages/NotFound";
 
@@ -86,14 +85,6 @@ function App() {
       />
 
       {/* PROTECTED AUTHENTICATED ROUTES (Redirects to /login if unauthenticated) */}
-      <Route
-        path="/consent"
-        element={
-          <ProtectedRoute>
-            <ConsentForm />
-          </ProtectedRoute>
-        }
-      />
       <Route
         path="/home"
         element={

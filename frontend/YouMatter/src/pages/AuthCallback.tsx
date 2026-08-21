@@ -30,8 +30,8 @@ function AuthCallback() {
       localStorage.setItem("youmatter_user_name", username);
 
       await refreshAuth();
-      const hasConsent = localStorage.getItem("consentGiven") === "true";
-      navigate(hasConsent ? "/home" : "/consent", { replace: true });
+      // Navigate DIRECTLY to /home with zero intermediate pages
+      navigate("/home", { replace: true });
     };
 
     // 1. Listen for Supabase Auth state changes (SIGNED_IN, INITIAL_SESSION)

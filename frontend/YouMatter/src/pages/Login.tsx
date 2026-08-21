@@ -41,8 +41,7 @@ function Login() {
         localStorage.setItem("youmatter_user_name", username);
 
         await refreshAuth();
-        const hasConsent = localStorage.getItem("consentGiven") === "true";
-        navigate(hasConsent ? "/home" : "/consent", { replace: true });
+        navigate("/home", { replace: true });
       }
     } catch (err: any) {
       console.error("Login error:", err);
