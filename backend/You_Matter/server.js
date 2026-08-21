@@ -75,6 +75,15 @@ wss.on("connection", (ws) => {
   ws.on("close", () => console.log("WebSocket client disconnected"));
 });
 
+// Global Safety Process Handlers to Prevent Uncaught Process Crashes
+process.on("uncaughtException", (err) => {
+  console.error("🔥 CRITICAL UNCAUGHT EXCEPTION:", err.stack || err.message || err);
+});
+
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("🔥 CRITICAL UNHANDLED REJECTION at:", promise, "reason:", reason);
+});
+
 server.listen(PORT, "0.0.0.0", () => {
   console.log(`Server & WebSockets running on port ${PORT}`);
 });

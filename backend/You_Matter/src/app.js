@@ -5,6 +5,7 @@ import supabase from "./config/supabaseClient.js";
 
 import userRoutes from './routes/userRoutes.js';
 import guardianRoutes from './routes/guardianRoutes.js';
+import aiRoutes from './routes/aiRoutes.js';
 import { apiLimiter } from "./middleware/rateLimiter.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
@@ -108,6 +109,7 @@ app.use('/api/v1', userRoutes);
 app.use('/api/v1/user', userRoutes);
 app.use('/api/v1', guardianRoutes);
 app.use('/api/v1/user', guardianRoutes);
+app.use('/api/v1/ai', aiRoutes);
 
 // 404 handler
 app.use((req, res) => {

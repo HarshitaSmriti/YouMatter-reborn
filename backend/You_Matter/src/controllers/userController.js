@@ -286,6 +286,15 @@ export const saveMessage = async (req, res, next) => {
       res.setHeader("Cache-Control", "no-cache");
       res.setHeader("Connection", "keep-alive");
 
+      let isClientConnected = true;
+      req.on("close", () => {
+        isClientConnected = false;
+      });
+      res.on("error", (err) => {
+        isClientConnected = false;
+        console.warn("Client SSE socket error notice:", err.message);
+      });
+
       const rawAiUrl = process.env.AI_CHAT_URL || "http://localhost:5000/chat";
       let aiUrl = rawAiUrl.trim();
       if (!aiUrl.endsWith("/chat")) {
@@ -314,8 +323,13 @@ export const saveMessage = async (req, res, next) => {
         );
 
         aiResponse.data.on("data", (chunkBuffer) => {
+          if (!isClientConnected) return;
           const chunkStr = chunkBuffer.toString();
-          res.write(chunkStr);
+          try {
+            res.write(chunkStr);
+          } catch (e) {
+            isClientConnected = false;
+          }
 
           const lines = chunkStr.split("\n");
           for (const line of lines) {
@@ -341,22 +355,33 @@ export const saveMessage = async (req, res, next) => {
               console.warn("Conversations stream DB insert notice:", dbErr.message);
             }
           }
-          res.end();
+          if (isClientConnected) {
+            try { res.end(); } catch (e) {}
+          }
         });
 
         aiResponse.data.on("error", (streamErr) => {
           console.error("AI stream error:", streamErr.message);
-          res.write(`data: ${JSON.stringify({ error: streamErr.message })}\n\n`);
-          res.write(`data: [DONE]\n\n`);
-          res.end();
+          if (isClientConnected) {
+            try {
+              res.write(`data: ${JSON.stringify({ error: streamErr.message })}\n\n`);
+              res.write(`data: [DONE]\n\n`);
+              res.end();
+            } catch (e) {}
+          }
         });
 
         return;
       } catch (err) {
         console.error("Stream init error:", err.message);
-        res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
-        res.write(`data: [DONE]\n\n`);
-        return res.end();
+        if (isClientConnected) {
+          try {
+            res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+            res.write(`data: [DONE]\n\n`);
+            res.end();
+          } catch (e) {}
+        }
+        return;
       }
     }
 
