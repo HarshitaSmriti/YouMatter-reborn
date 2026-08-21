@@ -612,12 +612,13 @@ export default function Chat() {
 
                 {/* INPUT BAR */}
                 <div
-                  className="flex items-end gap-2 rounded-[22px] border p-3 shadow-xs transition-all"
+                  className="relative z-10 flex items-end gap-2 rounded-[22px] border p-3 shadow-sm transition-all focus-within:ring-2 focus-within:ring-purple-400"
                   style={{ backgroundColor: theme.soft, borderColor: theme.border }}
                 >
                   <textarea
                     rows={1}
                     value={message}
+                    disabled={isLoading}
                     onChange={(e) => {
                       setMessage(e.target.value);
                       e.target.style.height = "auto";
@@ -630,7 +631,7 @@ export default function Chat() {
                       }
                     }}
                     placeholder="Type your message… (Enter to send)"
-                    className="flex-1 resize-none bg-transparent text-sm outline-none font-medium leading-6"
+                    className="flex-1 resize-none bg-transparent text-sm outline-none font-medium leading-6 cursor-text focus:outline-none placeholder:text-slate-400 dark:placeholder:text-slate-500"
                     style={{ maxHeight: "120px", color: theme.text }}
                   />
                   <button
