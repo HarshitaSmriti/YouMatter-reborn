@@ -1,6 +1,11 @@
-const BASE_URL =
-  (typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL) ||
-  "http://localhost:3000/api/v1";
+const getBaseApiUrl = () => {
+  const envUrl = typeof import.meta !== "undefined" && import.meta.env?.VITE_API_URL;
+  if (!envUrl) return "http://localhost:3000/api/v1";
+  const trimmed = envUrl.replace(/\/$/, "");
+  return trimmed.endsWith("/api/v1") ? trimmed : `${trimmed}/api/v1`;
+};
+
+const BASE_URL = getBaseApiUrl();
 
 export const apiRequest = async (endpoint, method = "GET", body = null) => {
   const token = localStorage.getItem("token");

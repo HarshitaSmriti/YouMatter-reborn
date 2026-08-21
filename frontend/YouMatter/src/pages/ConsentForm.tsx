@@ -73,7 +73,7 @@ function ConsentForm() {
         guardian_phone: formData.guardianPhone,
         guardian_contact: formData.guardianEmail || formData.guardianPhone,
         consent: formData.consent,
-      }).catch((err) => console.warn("Sync user profile notice:", err));
+      }).catch((err: any) => console.warn("Sync user profile notice:", err));
 
       if (formData.guardianName && formData.guardianEmail) {
         await api.post("/guardians", {
@@ -85,7 +85,7 @@ function ConsentForm() {
           wellbeingNotificationEnabled: true,
           highRiskNotificationEnabled: true,
           emergencyNotificationEnabled: true,
-        }).catch((err) => console.warn("Sync guardian record notice:", err));
+        }).catch((err: any) => console.warn("Sync guardian record notice:", err));
       }
 
       navigate("/home");

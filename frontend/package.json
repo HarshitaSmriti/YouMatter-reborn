@@ -1,0 +1,12 @@
+{
+  "name": "youmatter-frontend-root",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "cd YouMatter && npm run dev",
+    "build": "cd YouMatter && npm run build && cp -r dist ../dist",
+    "preview": "cd YouMatter && npm run preview",
+    "postinstall": "cd YouMatter && npm install"
+  }
+}
