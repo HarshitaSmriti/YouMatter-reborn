@@ -1,6 +1,6 @@
 import ai from "../services/gemini.js";
 
-function fetchWithTimeout(promise, ms = 25000) {
+function fetchWithTimeout(promise, ms = 20000) {
   return Promise.race([
     promise,
     new Promise((_, reject) =>
@@ -15,6 +15,9 @@ export class GeminiProvider {
     this.modelsToTry = [
       "gemini-3.6-flash",
       "gemini-3.7-flash",
+      "gemini-1.5-flash",
+      "gemini-1.5-pro",
+      "gemini-2.0-flash-exp",
     ];
   }
 
@@ -32,7 +35,7 @@ export class GeminiProvider {
               maxOutputTokens,
             },
           }),
-          25000
+          20000
         );
 
         const responseText = response?.text;
