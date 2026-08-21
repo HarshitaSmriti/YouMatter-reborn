@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   ArrowRight,
   Bot,
@@ -13,7 +13,7 @@ import {
 
 import chatbotIllustration from "../assets/chatbot.svg";
 import landingData from "../data/landingData";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 const toneClasses: Record<string, string> = {
   purple: "bg-[#6d4df2] text-white",
@@ -151,8 +151,17 @@ function ChatPreview() {
 }
 
 function Landing() {
+  const navigate = useNavigate();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const ContactIcon = landingData.contact.icon;
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const isGuest = localStorage.getItem("youmatter_guest_pass_used");
+    if (token || isGuest) {
+      navigate("/home", { replace: true });
+    }
+  }, [navigate]);
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#fbfaff] text-[#090d2c]">
