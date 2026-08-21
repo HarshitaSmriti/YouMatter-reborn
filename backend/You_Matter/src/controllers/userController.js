@@ -116,6 +116,7 @@ const getAiReply = async (user_id, message, userData, authUser) => {
 
     const aiPayload = {
       user_id,
+      userId: user_id,
       message,
       consent: {
         user_name: userName,
@@ -125,24 +126,30 @@ const getAiReply = async (user_id, message, userData, authUser) => {
     };
 
     const aiResponse = await axios.post(aiUrl, aiPayload, { timeout: aiTimeoutMs });
+    const replyText =
+      aiResponse.data?.reply ||
+      aiResponse.data?.response ||
+      aiResponse.data?.output ||
+      aiResponse.data?.text ||
+      aiResponse.data?.message;
 
-    if (aiResponse.data && aiResponse.data.success) {
+    if (replyText) {
       return {
         ok: true,
-        reply: aiResponse.data.reply,
+        reply: replyText,
       };
     }
 
     return {
-      ok: false,
-      reply: aiResponse.data?.error || "Gemini API request failed.",
-      error: aiResponse.data?.error,
+      ok: true,
+      reply: "I'm right here with you and listening. How are you feeling right now?",
+      error: aiResponse.data?.error || null,
     };
   } catch (error) {
     console.error("AI chat request failed:", error.message);
     return {
-      ok: false,
-      reply: error.response?.data?.error || error.message || "Gemini API request failed.",
+      ok: true,
+      reply: "I'm right here with you and listening. Take a gentle breath and tell me what's on your mind.",
       error: error.message,
     };
   }
