@@ -52,6 +52,44 @@ export class GeminiProvider {
     throw new Error(lastError?.message || "Gemini provider failed to generate content.");
   }
 
+  async generateStream({ promptText, systemInstruction, maxOutputTokens = 1000, onChunk }) {
+    let lastError = null;
+
+    for (const modelName of this.modelsToTry) {
+      try {
+        const responseStream = await fetchWithTimeout(
+          ai.models.generateContentStream({
+            model: modelName,
+            contents: promptText,
+            config: {
+              systemInstruction,
+              maxOutputTokens,
+            },
+          }),
+          20000
+        );
+
+        let fullText = "";
+        for await (const chunk of responseStream) {
+          const chunkText = chunk.text;
+          if (chunkText) {
+            fullText += chunkText;
+            if (onChunk) onChunk(chunkText);
+          }
+        }
+
+        if (fullText && fullText.trim()) {
+          return { text: fullText.trim(), modelUsed: modelName };
+        }
+      } catch (err) {
+        console.warn(`Gemini stream model ${modelName} attempt error:`, err.message);
+        lastError = err;
+      }
+    }
+
+    throw new Error(lastError?.message || "Gemini provider failed to generate stream content.");
+  }
+
   async healthCheck() {
     try {
       const response = await fetchWithTimeout(

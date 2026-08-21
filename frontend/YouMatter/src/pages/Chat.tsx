@@ -237,7 +237,6 @@ export default function Chat() {
 
     const userMessage: Message = { sender: "user", message: content, text: content, timestamp: Date.now() };
     
-    // Atomically preserve user message in state immediately
     let currentHistory: Message[] = [];
     setMessages((prev) => {
       currentHistory = [...prev, userMessage];
@@ -245,36 +244,99 @@ export default function Chat() {
     });
     setIsLoading(true);
 
-    if (wsRef.current && wsRef.current.readyState === WebSocket.OPEN) {
-      wsRef.current.send(
-        JSON.stringify({
-          userId: userId || "guest",
-          message: content,
-        })
-      );
-      return;
-    }
+    const aiMessageId = Date.now();
+    const aiPlaceholder: Message = { sender: "ai", message: "", text: "", timestamp: aiMessageId };
+    setMessages((prev) => [...prev, aiPlaceholder]);
+
+    const apiBaseUrl = (import.meta.env.VITE_API_URL || "https://youmatter-reborn.onrender.com/api/v1").replace(/\/+$/, "");
+    const token = localStorage.getItem("youmatter_token") || localStorage.getItem("supabase_token");
 
     try {
-      const res = await api.post("/message", {
-        message: content,
-        history: currentHistory.slice(-6).map((m) => ({
-          role: (m.sender || "").toLowerCase() === "user" ? "user" : "model",
-          text: m.message || m.text || "",
-        })),
+      const response = await fetch(`${apiBaseUrl}/message?stream=true`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "text/event-stream",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({
+          message: content,
+          history: currentHistory.slice(-6).map((m) => ({
+            role: (m.sender || "").toLowerCase() === "user" ? "user" : "model",
+            text: m.message || m.text || "",
+          })),
+        }),
       });
 
-      const reply = res.data?.reply || res.data?.message || "I'm right here with you.";
-      const aiMessage: Message = { sender: "ai", message: reply, text: reply, timestamp: Date.now() };
-      setMessages((prev) => [...prev, aiMessage]);
+      if (!response.ok || !response.body) {
+        throw new Error(`HTTP error ${response.status}`);
+      }
+
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let accumulatedText = "";
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunkStr = decoder.decode(value, { stream: true });
+        const lines = chunkStr.split("\n");
+
+        for (const line of lines) {
+          if (line.startsWith("data: ") && !line.includes("[DONE]")) {
+            try {
+              const parsed = JSON.parse(line.substring(6));
+              if (parsed.text) {
+                accumulatedText += parsed.text;
+                setMessages((prev) =>
+                  prev.map((msg) =>
+                    msg.timestamp === aiMessageId
+                      ? { ...msg, message: accumulatedText, text: accumulatedText }
+                      : msg
+                  )
+                );
+              }
+            } catch (e) {}
+          }
+        }
+      }
+
+      if (!accumulatedText.trim()) {
+        const fallback = "I'm right here with you.";
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.timestamp === aiMessageId ? { ...msg, message: fallback, text: fallback } : msg
+          )
+        );
+      }
     } catch (err: any) {
-      console.error("Chat API error:", err);
-      const fallbackMsg: Message = {
-        sender: "ai",
-        text: "I'm right here with you. I might be experiencing a brief delay, but please know you're not alone.",
-        timestamp: Date.now(),
-      };
-      setMessages((prev) => [...prev, fallbackMsg]);
+      console.error("Chat streaming error:", err);
+      try {
+        const res = await api.post("/message", {
+          message: content,
+          history: currentHistory.slice(-6).map((m) => ({
+            role: (m.sender || "").toLowerCase() === "user" ? "user" : "model",
+            text: m.message || m.text || "",
+          })),
+        });
+
+        const reply = res.data?.reply || res.data?.message || "I'm right here with you.";
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.timestamp === aiMessageId ? { ...msg, message: reply, text: reply } : msg
+          )
+        );
+      } catch (fallbackErr) {
+        const fallbackMsgText = "I'm right here with you. I might be experiencing a brief delay, but please know you're not alone.";
+        setMessages((prev) =>
+          prev.map((msg) =>
+            msg.timestamp === aiMessageId
+              ? { ...msg, message: fallbackMsgText, text: fallbackMsgText }
+              : msg
+          )
+        );
+      }
     } finally {
       setIsLoading(false);
     }

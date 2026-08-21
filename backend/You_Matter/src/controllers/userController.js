@@ -272,6 +272,7 @@ export const saveMessage = async (req, res, next) => {
   try {
     const { message } = messageSchema.parse(req.body);
     const user_id = req.user.id;
+    const isStream = req.query.stream === "true" || req.headers.accept === "text/event-stream";
 
     const supabaseUser = getUserClient(req);
     const crisisDetection = detectCrisis(message);
@@ -279,6 +280,85 @@ export const saveMessage = async (req, res, next) => {
     const userData = req.isDemoUser
       ? null
       : await getUserProfile(supabaseUser, user_id);
+
+    if (isStream) {
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
+
+      const rawAiUrl = process.env.AI_CHAT_URL || "http://localhost:5000/chat";
+      let aiUrl = rawAiUrl.trim();
+      if (!aiUrl.endsWith("/chat")) {
+        aiUrl = aiUrl.replace(/\/+$/, "") + "/chat";
+      }
+
+      let accumulatedReply = "";
+
+      try {
+        const aiResponse = await axios.post(
+          aiUrl + "?stream=true",
+          {
+            user_id,
+            userId: user_id,
+            message,
+            consent: {
+              user_name: getDisplayName(userData, req.user),
+              guardian_name: userData?.guardian_name || getDisplayName(userData, req.user),
+              guardian_email: getGuardianEmail(userData),
+            },
+          },
+          {
+            responseType: "stream",
+            timeout: aiTimeoutMs,
+          }
+        );
+
+        aiResponse.data.on("data", (chunkBuffer) => {
+          const chunkStr = chunkBuffer.toString();
+          res.write(chunkStr);
+
+          const lines = chunkStr.split("\n");
+          for (const line of lines) {
+            if (line.startsWith("data: ") && !line.includes("[DONE]")) {
+              try {
+                const parsed = JSON.parse(line.substring(6));
+                if (parsed.text) accumulatedReply += parsed.text;
+              } catch (e) {}
+            }
+          }
+        });
+
+        aiResponse.data.on("end", async () => {
+          if (!req.isDemoUser && accumulatedReply.trim()) {
+            try {
+              await supabaseUser
+                .from("conversations")
+                .insert([
+                  { user_id, message, sender: "user" },
+                  { user_id, message: accumulatedReply.trim(), sender: "ai" },
+                ]);
+            } catch (dbErr) {
+              console.warn("Conversations stream DB insert notice:", dbErr.message);
+            }
+          }
+          res.end();
+        });
+
+        aiResponse.data.on("error", (streamErr) => {
+          console.error("AI stream error:", streamErr.message);
+          res.write(`data: ${JSON.stringify({ error: streamErr.message })}\n\n`);
+          res.write(`data: [DONE]\n\n`);
+          res.end();
+        });
+
+        return;
+      } catch (err) {
+        console.error("Stream init error:", err.message);
+        res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+        res.write(`data: [DONE]\n\n`);
+        return res.end();
+      }
+    }
 
     const aiResult = await getAiReply(user_id, message, userData, req.user);
 
