@@ -104,10 +104,13 @@ export default function Chat() {
   const wsRef = useRef<WebSocket | null>(null);
 
   useEffect(() => {
-    const envWs = (import.meta as any).env?.VITE_WS_URL;
-    const envApi = (import.meta as any).env?.VITE_API_URL;
-    const wsUrl = envWs || (envApi ? envApi.replace(/^http/, "ws").replace(/\/$/, "") + "/ws/chat" : `ws://${window.location.hostname}:3000/ws/chat`);
-    const ws = new WebSocket(wsUrl);
+    const envWs = import.meta.env.VITE_WS_URL;
+    if (!envWs) {
+      // Use clean HTTP REST mode when no explicit WebSocket URL is configured
+      return;
+    }
+
+    const ws = new WebSocket(envWs);
     wsRef.current = ws;
 
     ws.onopen = () => {
