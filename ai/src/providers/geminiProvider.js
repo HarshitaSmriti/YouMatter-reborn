@@ -57,17 +57,8 @@ export class GeminiProvider {
 
   getModelsToTry() {
     const envModel = (process.env.GEMINI_MODEL || "").trim();
-    const defaults = ["gemini-2.5-flash", "gemini-1.5-flash", "gemini-2.0-flash"];
-    const models = [];
-    if (envModel) {
-      models.push(envModel);
-    }
-    for (const m of defaults) {
-      if (!models.includes(m)) {
-        models.push(m);
-      }
-    }
-    return models;
+    const primary = envModel || "gemini-2.5-flash";
+    return [primary];
   }
 
   async generate({ promptText, systemInstruction, maxOutputTokens = 700 }) {
