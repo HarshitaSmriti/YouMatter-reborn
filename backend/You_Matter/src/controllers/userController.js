@@ -303,7 +303,7 @@ export const saveMessage = async (req, res, next) => {
         language: crisisDetection.language,
         matched_text: crisisDetection.matchedText,
         alert_queued: crisisDetection.isCrisis && crisisEmailEnabled,
-        alert_sent_to: alertSentTo,
+        alert_sent_to: getGuardianEmail(userData, req.body),
       },
     });
 

@@ -1,5 +1,4 @@
 import express from 'express';
-import cors from 'cors';
 import morgan from "morgan";
 import supabase from "./config/supabaseClient.js";
 
@@ -10,66 +9,57 @@ import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
-// Configure Production CORS Origins
-const defaultAllowedOrigins = [
-  "http://localhost:5173",
-  "http://localhost:3000",
-  "http://localhost:4173",
-  "http://127.0.0.1:5173",
-  "https://you-matter-seven.vercel.app",
-];
+// Universal CORS & Preflight Middleware (ensures CORS headers on ALL requests, OPTIONS, and errors)
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
 
-const getDynamicAllowedOrigins = () => {
-  const origins = [...defaultAllowedOrigins];
+  const allowedOrigins = [
+    "https://you-matter-seven.vercel.app",
+    "http://localhost:5173",
+    "http://localhost:3000",
+    "http://localhost:4173",
+    "http://127.0.0.1:5173",
+  ];
 
-  const envFrontend = process.env.FRONTEND_URL;
-  if (envFrontend) {
-    envFrontend.split(',').forEach((url) => {
-      const trimmed = url.trim().replace(/\/$/, "");
-      if (trimmed && !origins.includes(trimmed)) {
-        origins.push(trimmed);
+  if (process.env.FRONTEND_URL) {
+    process.env.FRONTEND_URL.split(',').forEach((url) => {
+      const clean = url.trim().replace(/\/$/, "");
+      if (clean && !allowedOrigins.includes(clean)) {
+        allowedOrigins.push(clean);
       }
     });
   }
 
-  const envOrigins = process.env.ALLOWED_ORIGINS;
-  if (envOrigins) {
-    envOrigins.split(',').forEach((url) => {
-      const trimmed = url.trim().replace(/\/$/, "");
-      if (trimmed && !origins.includes(trimmed)) {
-        origins.push(trimmed);
+  if (process.env.ALLOWED_ORIGINS) {
+    process.env.ALLOWED_ORIGINS.split(',').forEach((url) => {
+      const clean = url.trim().replace(/\/$/, "");
+      if (clean && !allowedOrigins.includes(clean)) {
+        allowedOrigins.push(clean);
       }
     });
   }
 
-  return origins;
-};
+  const reqOrigin = origin ? origin.replace(/\/$/, "") : "";
+  if (origin && (allowedOrigins.includes(reqOrigin) || allowedOrigins.some(o => reqOrigin.endsWith(o.replace(/^https?:\/\//, ''))))) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  } else if (origin) {
+    // Fallback in production so browser never blocks valid frontend requests
+    res.setHeader("Access-Control-Allow-Origin", origin);
+  } else {
+    res.setHeader("Access-Control-Allow-Origin", "*");
+  }
 
-const allowedOriginsList = getDynamicAllowedOrigins();
+  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, X-Requested-With, Accept, x-user-id, x-user-name");
+  res.setHeader("Access-Control-Allow-Credentials", "true");
 
-const corsOptions = {
-  origin: (origin, callback) => {
-    // Allow non-browser requests (mobile apps, Postman, cURL, server-to-server) where origin is undefined
-    if (!origin) return callback(null, true);
+  // Immediate HTTP 200 response for browser preflight OPTIONS requests
+  if (req.method === "OPTIONS") {
+    return res.status(200).end();
+  }
 
-    const cleanOrigin = origin.replace(/\/$/, "");
-    if (allowedOriginsList.includes(cleanOrigin) || allowedOriginsList.some(o => cleanOrigin.endsWith(o.replace(/^https?:\/\//, '')))) {
-      return callback(null, true);
-    }
-
-    console.warn(`⚠️ Notice: CORS request received from origin: ${origin}`);
-    // Permit origin in fallback mode while preserving authentication headers
-    return callback(null, true);
-  },
-  methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With", "Accept", "x-user-id", "x-user-name"],
-  credentials: true,
-  optionsSuccessStatus: 200,
-};
-
-// Apply CORS middleware & preflight handling globally BEFORE rate limiting
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions));
+  next();
+});
 
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
