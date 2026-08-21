@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 
 interface Message {
+  id?: string;
   sender: string;
   message?: string;
   text?: string;
@@ -152,8 +153,10 @@ export default function Chat() {
         const res = await api.get("/conversation");
         const historyData = res.data?.data;
         if (Array.isArray(historyData) && historyData.length > 0) {
-          const parsed: Message[] = historyData.map((item: any) => ({
+          const parsed: Message[] = historyData.map((item: any, idx: number) => ({
+            id: item.id || `db_msg_${idx}_${Date.now()}`,
             sender: item.sender || "ai",
+            message: item.message || item.text || "",
             text: item.message || item.text || "",
             timestamp: item.created_at ? new Date(item.created_at).getTime() : Date.now(),
           }));
@@ -235,7 +238,14 @@ export default function Chat() {
     setHasInteracted(true);
     if (viewingSession) setViewingSession(null);
 
-    const userMessage: Message = { sender: "user", message: content, text: content, timestamp: Date.now() };
+    const userMsgId = `msg_user_${Date.now()}_${Math.random().toString(36).substring(2, 9)}`;
+    const userMessage: Message = {
+      id: userMsgId,
+      sender: "user",
+      message: content,
+      text: content,
+      timestamp: Date.now(),
+    };
     
     let currentHistory: Message[] = [];
     setMessages((prev) => {
@@ -244,8 +254,14 @@ export default function Chat() {
     });
     setIsLoading(true);
 
-    const aiMessageId = Date.now();
-    const aiPlaceholder: Message = { sender: "ai", message: "", text: "", timestamp: aiMessageId };
+    const aiMsgId = `msg_ai_${Date.now() + 5}_${Math.random().toString(36).substring(2, 9)}`;
+    const aiPlaceholder: Message = {
+      id: aiMsgId,
+      sender: "ai",
+      message: "",
+      text: "",
+      timestamp: Date.now() + 5,
+    };
     setMessages((prev) => [...prev, aiPlaceholder]);
 
     let rawBase = (import.meta.env.VITE_API_URL || "https://youmatter-reborn.onrender.com/api/v1").trim().replace(/\/+$/, "");
@@ -257,6 +273,8 @@ export default function Chat() {
     }
     const apiBaseUrl = rawBase;
     const token = localStorage.getItem("token") || localStorage.getItem("youmatter_token") || localStorage.getItem("supabase_token");
+
+    let accumulatedText = "";
 
     try {
       const response = await fetch(`${apiBaseUrl}/message?stream=true`, {
@@ -281,7 +299,6 @@ export default function Chat() {
 
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
-      let accumulatedText = "";
 
       while (true) {
         const { done, value } = await reader.read();
@@ -298,7 +315,7 @@ export default function Chat() {
                 accumulatedText += parsed.text;
                 setMessages((prev) =>
                   prev.map((msg) =>
-                    msg.timestamp === aiMessageId
+                    msg.id === aiMsgId
                       ? { ...msg, message: accumulatedText, text: accumulatedText }
                       : msg
                   )
@@ -310,15 +327,15 @@ export default function Chat() {
       }
 
       if (!accumulatedText.trim()) {
-        const fallback = "I'm right here with you.";
+        const fallback = "I'm right here with you and listening. Take a gentle breath and tell me what's on your mind.";
         setMessages((prev) =>
           prev.map((msg) =>
-            msg.timestamp === aiMessageId ? { ...msg, message: fallback, text: fallback } : msg
+            msg.id === aiMsgId ? { ...msg, message: fallback, text: fallback } : msg
           )
         );
       }
     } catch (err: any) {
-      console.error("Chat streaming error:", err);
+      console.error("Chat streaming notice:", err);
       try {
         const res = await api.post("/message", {
           message: content,
@@ -328,18 +345,19 @@ export default function Chat() {
           })),
         });
 
-        const reply = res.data?.reply || res.data?.message || "I'm right here with you.";
+        const reply = res.data?.reply || res.data?.message || "I'm right here with you and listening. Take a gentle breath and tell me what's on your mind.";
         setMessages((prev) =>
           prev.map((msg) =>
-            msg.timestamp === aiMessageId ? { ...msg, message: reply, text: reply } : msg
+            msg.id === aiMsgId ? { ...msg, message: reply, text: reply } : msg
           )
         );
       } catch (fallbackErr) {
-        const fallbackMsgText = "I'm right here with you. I might be experiencing a brief delay, but please know you're not alone.";
+        console.error("Fallback POST message error:", fallbackErr);
+        const errorText = "I am experiencing a temporary connection issue. Please check your internet connection or try again in a moment.";
         setMessages((prev) =>
           prev.map((msg) =>
-            msg.timestamp === aiMessageId
-              ? { ...msg, message: fallbackMsgText, text: fallbackMsgText }
+            msg.id === aiMsgId
+              ? { ...msg, message: errorText, text: errorText }
               : msg
           )
         );
@@ -616,7 +634,7 @@ export default function Chat() {
                 const content = msg.message || msg.text || "";
                 return (
                   <div
-                    key={index}
+                    key={msg.id || `${msg.sender}_${msg.timestamp}_${index}`}
                     className={`flex ${isUser ? "justify-end" : "justify-start"}`}
                     style={{ animation: "fadeUp 0.2s ease-out" }}
                   >
