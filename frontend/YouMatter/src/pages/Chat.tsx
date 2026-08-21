@@ -306,8 +306,14 @@ export default function Chat() {
   };
 
   const loadSession = (session: ChatSession) => {
-    setViewingSession(session);
+    setViewingSession(null);
+    setMessages(session.messages || []);
+    setCurrentSessionId(session.id);
+    setHasInteracted(true);
     setHistoryOpen(false);
+    if (userId) {
+      localStorage.setItem(getUserCurrentKey(userId), session.id);
+    }
   };
 
   const exitSessionView = () => setViewingSession(null);

@@ -13,8 +13,11 @@ export class GeminiProvider {
   constructor() {
     this.name = "GeminiProvider";
     this.modelsToTry = [
-      "gemini-2.0-flash",
+      "gemini-1.5-flash-latest",
+      "gemini-2.0-flash-exp",
       "gemini-1.5-flash",
+      "gemini-1.5-pro-latest",
+      "gemini-pro"
     ];
   }
 
