@@ -1,7 +1,4 @@
-import {
-  Routes,
-  Route,
-} from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Landing from "./pages/Landing";
 import Login from "./pages/Login";
@@ -19,19 +16,16 @@ import ConsentForm from "./pages/ConsentForm";
 import AuthCallback from "./pages/AuthCallback";
 import NotFound from "./pages/NotFound";
 
-import {
-  useEffect,
-  useState,
-} from "react";
+import { ProtectedRoute } from "./components/ProtectedRoute";
+import { PublicRoute } from "./components/PublicRoute";
+
+import { useEffect, useState } from "react";
 
 function App() {
-  const [darkMode, setDarkMode] =
-    useState(false);
+  const [darkMode, setDarkMode] = useState(false);
 
   useEffect(() => {
-    const savedTheme =
-      localStorage.getItem("theme");
-
+    const savedTheme = localStorage.getItem("theme");
     if (savedTheme === "dark") {
       setDarkMode(true);
     }
@@ -39,107 +33,135 @@ function App() {
 
   useEffect(() => {
     if (darkMode) {
-      document.documentElement.classList.add(
-        "dark"
-      );
-
-      localStorage.setItem(
-        "theme",
-        "dark"
-      );
+      document.documentElement.classList.add("dark");
+      localStorage.setItem("theme", "dark");
     } else {
-      document.documentElement.classList.remove(
-        "dark"
-      );
-
-      localStorage.setItem(
-        "theme",
-        "light"
-      );
+      document.documentElement.classList.remove("dark");
+      localStorage.setItem("theme", "light");
     }
   }, [darkMode]);
 
   return (
     <Routes>
+      {/* PUBLIC ROUTES (Redirects to /home if already authenticated) */}
       <Route
         path="/"
-        element={<Landing />}
+        element={
+          <PublicRoute>
+            <Landing />
+          </PublicRoute>
+        }
       />
-
       <Route
         path="/landing"
-        element={<Landing />}
+        element={
+          <PublicRoute>
+            <Landing />
+          </PublicRoute>
+        }
       />
-
       <Route
         path="/login"
-        element={<Login />}
+        element={
+          <PublicRoute>
+            <Login />
+          </PublicRoute>
+        }
       />
-
       <Route
         path="/signup"
-        element={<Signup />}
+        element={
+          <PublicRoute>
+            <Signup />
+          </PublicRoute>
+        }
       />
-
       <Route
         path="/forgot-password"
-        element={<ForgotPassword />}
+        element={
+          <PublicRoute>
+            <ForgotPassword />
+          </PublicRoute>
+        }
       />
 
+      {/* PROTECTED AUTHENTICATED ROUTES (Redirects to /login if unauthenticated) */}
       <Route
         path="/consent"
-        element={<ConsentForm />}
+        element={
+          <ProtectedRoute>
+            <ConsentForm />
+          </ProtectedRoute>
+        }
       />
-
       <Route
         path="/home"
-        element={<Home />}
+        element={
+          <ProtectedRoute>
+            <Home />
+          </ProtectedRoute>
+        }
       />
-
       <Route
         path="/chat"
-        element={<Chat />}
+        element={
+          <ProtectedRoute>
+            <Chat />
+          </ProtectedRoute>
+        }
       />
-
       <Route
         path="/journal"
-        element={<Journal />}
+        element={
+          <ProtectedRoute>
+            <Journal />
+          </ProtectedRoute>
+        }
       />
-
       <Route
         path="/mood"
-        element={<MoodTracker />}
+        element={
+          <ProtectedRoute>
+            <MoodTracker />
+          </ProtectedRoute>
+        }
       />
-
       <Route
         path="/breathing"
-        element={<Breathing />}
+        element={
+          <ProtectedRoute>
+            <Breathing />
+          </ProtectedRoute>
+        }
       />
-
       <Route
         path="/games"
-        element={<Games />}
+        element={
+          <ProtectedRoute>
+            <Games />
+          </ProtectedRoute>
+        }
       />
-
       <Route
         path="/support"
-        element={<Support />}
+        element={
+          <ProtectedRoute>
+            <Support />
+          </ProtectedRoute>
+        }
       />
-
       <Route
         path="/settings"
-        element={<Settings />}
+        element={
+          <ProtectedRoute>
+            <Settings />
+          </ProtectedRoute>
+        }
       />
 
-      <Route
-        path="/auth/callback"
-        element={<AuthCallback />}
-      />
-
-      <Route
-        path="*"
-        element={<NotFound />}
-      />
+      {/* AUTH CALLBACK & NOT FOUND */}
+      <Route path="/auth/callback" element={<AuthCallback />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
   );
 }

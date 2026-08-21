@@ -17,6 +17,7 @@ import {
 import { NavLink, useNavigate } from "react-router-dom";
 import supabase from "../config/supabaseClient";
 import { useMood } from "../context/MoodContext";
+import { useAuth } from "../context/AuthContext";
 
 const navItems = [
   { name: "Home", icon: House, path: "/home" },
@@ -32,6 +33,7 @@ const navItems = [
 function Sidebar() {
   const navigate = useNavigate();
   const { theme } = useMood();
+  const { signOut: authSignOut } = useAuth();
   const [mobileOpen, setMobileOpen] = useState(false);
   const [userName, setUserName] = useState<string>(() => {
     return (
@@ -61,14 +63,7 @@ function Sidebar() {
   }, []);
 
   const handleSignOut = async () => {
-    try {
-      await supabase.auth.signOut();
-    } catch (err) {
-      console.warn("Sign out warning:", err);
-    }
-    localStorage.removeItem("token");
-    localStorage.removeItem("userName");
-    localStorage.removeItem("youmatter_user_name");
+    await authSignOut();
     navigate("/login", { replace: true });
   };
 

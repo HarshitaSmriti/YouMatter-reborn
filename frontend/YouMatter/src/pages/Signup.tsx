@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Eye, EyeOff, AlertCircle } from "lucide-react";
 
 import AuthLayout from "../components/AuthLayout";
 import supabase from "../config/supabaseClient";
+import { useAuth } from "../context/AuthContext";
 
 function Signup() {
   const [showPassword, setShowPassword] = useState(false);
@@ -17,25 +18,7 @@ function Signup() {
   const [errorMsg, setErrorMsg] = useState("");
 
   const navigate = useNavigate();
-
-  useEffect(() => {
-    const checkActiveSession = async () => {
-      const { data } = await supabase.auth.getSession();
-      if (data.session) {
-        const username =
-          data.session.user.user_metadata?.full_name ||
-          data.session.user.user_metadata?.name ||
-          data.session.user.email?.split("@")[0] ||
-          "Friend";
-        localStorage.setItem("userName", username);
-        localStorage.setItem("youmatter_user_name", username);
-
-        const hasConsent = localStorage.getItem("consentGiven") === "true";
-        navigate(hasConsent ? "/home" : "/consent", { replace: true });
-      }
-    };
-    checkActiveSession();
-  }, [navigate]);
+  const { refreshAuth } = useAuth();
 
   const handleSignup = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
@@ -77,9 +60,10 @@ function Signup() {
       localStorage.setItem("userEmail", email);
       if (data.session) {
         localStorage.setItem("token", data.session.access_token);
+        await refreshAuth();
       }
 
-      navigate("/consent");
+      navigate("/consent", { replace: true });
     } catch (err: any) {
       console.error("Signup error:", err);
       setErrorMsg("Registration failed. Please check your network and Supabase configuration.");

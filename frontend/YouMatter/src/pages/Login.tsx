@@ -3,9 +3,11 @@ import { Link, useNavigate } from "react-router-dom";
 import AuthLayout from "../components/AuthLayout";
 import supabase from "../config/supabaseClient";
 import { Eye, EyeOff, AlertCircle, Sparkles, User, X } from "lucide-react";
+import { useAuth } from "../context/AuthContext";
 
 function Login() {
   const navigate = useNavigate();
+  const { refreshAuth } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -38,8 +40,9 @@ function Login() {
         localStorage.setItem("userName", username);
         localStorage.setItem("youmatter_user_name", username);
 
+        await refreshAuth();
         const hasConsent = localStorage.getItem("consentGiven") === "true";
-        navigate(hasConsent ? "/home" : "/consent");
+        navigate(hasConsent ? "/home" : "/consent", { replace: true });
       }
     } catch (err: any) {
       console.error("Login error:", err);
@@ -61,7 +64,7 @@ function Login() {
   };
 
   // CONFIRM GUEST LOGIN WITH CUSTOM NAME
-  const confirmGuestLogin = (e: React.FormEvent) => {
+  const confirmGuestLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     const finalName = guestNameInput.trim() || "Guest User";
     localStorage.setItem("token", `demo-guest-token-${Date.now()}`);
@@ -69,7 +72,8 @@ function Login() {
     localStorage.setItem("youmatter_user_name", finalName);
     localStorage.setItem("youmatter_guest_pass_used", "true");
     setGuestModalOpen(false);
-    navigate("/home");
+    await refreshAuth();
+    navigate("/home", { replace: true });
   };
 
   // GOOGLE LOGIN

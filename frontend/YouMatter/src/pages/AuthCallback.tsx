@@ -1,9 +1,11 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import supabase from "../config/supabaseClient";
+import { useAuth } from "../context/AuthContext";
 
 function AuthCallback() {
   const navigate = useNavigate();
+  const { refreshAuth } = useAuth();
 
   useEffect(() => {
     const handleAuthCallback = async () => {
@@ -30,12 +32,13 @@ function AuthCallback() {
       localStorage.setItem("userEmail", user.email || "");
       localStorage.setItem("youmatter_user_name", username);
 
+      await refreshAuth();
       const hasConsent = localStorage.getItem("consentGiven") === "true";
       navigate(hasConsent ? "/home" : "/consent", { replace: true });
     };
 
     handleAuthCallback();
-  }, [navigate]);
+  }, [navigate, refreshAuth]);
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[#fcfbff] text-[#241b43]">

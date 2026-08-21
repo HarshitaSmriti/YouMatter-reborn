@@ -6,6 +6,7 @@ import "./styles/global.css";
 
 import App from "./App";
 import { MoodProvider } from "./context/MoodContext";
+import { AuthProvider } from "./context/AuthContext";
 
 const routerBasename =
   import.meta.env.BASE_URL === "/"
@@ -15,9 +16,11 @@ const routerBasename =
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <BrowserRouter basename={routerBasename}>
-      <MoodProvider>
-        <App />
-      </MoodProvider>
+      <AuthProvider>
+        <MoodProvider>
+          <App />
+        </MoodProvider>
+      </AuthProvider>
     </BrowserRouter>
   </StrictMode>
 );
