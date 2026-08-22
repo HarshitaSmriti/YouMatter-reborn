@@ -10,17 +10,17 @@ export class ProviderManager {
   constructor() {
     this.primaryProvider = process.env.AI_PRIMARY_PROVIDER || "gemini";
     this.fallbackProvider = process.env.AI_FALLBACK_PROVIDER || "";
-    this.aiTimeoutMs = parseInt(process.env.AI_REQUEST_TIMEOUT_MS || "20000", 10);
+    this.aiTimeoutMs = parseInt(process.env.AI_REQUEST_TIMEOUT_MS || "45000", 10);
     this.lastLatencyMs = 0;
   }
 
   getAiServiceUrl() {
     const rawUrl = process.env.AI_CHAT_URL || "https://youmatter-reborn-1.onrender.com/chat";
-    let aiUrl = rawUrl.trim();
-    if (!aiUrl.endsWith("/chat")) {
-      aiUrl = aiUrl.replace(/\/+$/, "") + "/chat";
+    let cleanUrl = rawUrl.trim().replace(/\/+$/, "");
+    if (!cleanUrl.endsWith("/chat")) {
+      cleanUrl += "/chat";
     }
-    return aiUrl;
+    return cleanUrl;
   }
 
   async execute({ user_id, message, consent, requestId }) {
@@ -32,6 +32,9 @@ export class ProviderManager {
 
     const startTime = Date.now();
     const aiUrl = this.getAiServiceUrl();
+
+    console.log(`[AI] Resolved AI URL: ${aiUrl}`);
+    console.log(`[AI] Sending request to AI service (requestId=${requestId})`);
 
     try {
       const response = await axios.post(
@@ -51,6 +54,9 @@ export class ProviderManager {
 
       this.lastLatencyMs = Date.now() - startTime;
       circuitBreaker.recordSuccess();
+
+      console.log(`[AI] AI response status: ${response.status}`);
+      console.log(`[AI] AI response content-type: ${response.headers["content-type"] || "unknown"}`);
 
       const reply =
         response.data?.reply ||
@@ -73,7 +79,8 @@ export class ProviderManager {
       this.lastLatencyMs = Date.now() - startTime;
       circuitBreaker.recordFailure(error);
 
-      console.error(`[ProviderManager] Execution error (requestId=${requestId}):`, error.message);
+      const status = error.response?.status || (error.code === "ECONNABORTED" ? 504 : 502);
+      console.warn(`[AI] AI request failed: status=${status}, message=${error.message}`);
       
       const isTimeout = error.code === "ECONNABORTED" || error.message?.includes("timeout");
       const customErr = new Error(isTimeout ? "AI response timed out." : error.message || "AI provider communication error.");
@@ -100,7 +107,6 @@ export class ProviderManager {
     }
 
     try {
-      // Ping AI service
       const pingUrl = aiUrl.replace(/\/chat$/, "/health") || aiUrl;
       const res = await axios.get(pingUrl, { timeout: 5000 }).catch(() => null);
       const latencyMs = Date.now() - startTime;

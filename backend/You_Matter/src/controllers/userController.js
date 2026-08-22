@@ -36,7 +36,16 @@ const normalizeMood = (mood) => {
 };
 
 const crisisEmailEnabled = process.env.ENABLE_CRISIS_EMAIL === "true";
-const aiTimeoutMs = Number(process.env.AI_TIMEOUT_MS || 20000);
+const aiTimeoutMs = Number(process.env.AI_TIMEOUT_MS || 45000);
+
+const resolveAiUrl = () => {
+  const rawUrl = (process.env.AI_CHAT_URL || "https://youmatter-reborn-1.onrender.com/chat").trim();
+  let cleanUrl = rawUrl.replace(/\/+$/, "");
+  if (!cleanUrl.endsWith("/chat")) {
+    cleanUrl += "/chat";
+  }
+  return cleanUrl;
+};
 
 const getGuardianEmail = (userData, reqBody) =>
   userData?.guardian_email ||
@@ -110,14 +119,9 @@ const getDisplayName = (userData, authUser) =>
 
 const getAiReply = async (user_id, message, userData, authUser) => {
   try {
-    const rawAiUrl = process.env.AI_CHAT_URL || "http://localhost:5000/chat";
-    let aiUrl = rawAiUrl.trim();
-    if (!aiUrl.endsWith("/chat")) {
-      aiUrl = aiUrl.replace(/\/+$/, "") + "/chat";
-    }
-
-    const hostName = aiUrl.replace(/^https?:\/\//, '').split('/')[0];
-    console.log(`[AI_TRACE] Attempting AI request to host=${hostName}, endpoint=/chat`);
+    const aiUrl = resolveAiUrl();
+    console.log(`[AI] Resolved AI URL: ${aiUrl}`);
+    console.log(`[AI] Sending request to AI service`);
 
     const userName = getDisplayName(userData, authUser);
     const guardianEmail = getGuardianEmail(userData);
@@ -134,7 +138,8 @@ const getAiReply = async (user_id, message, userData, authUser) => {
     };
 
     const aiResponse = await axios.post(aiUrl, aiPayload, { timeout: aiTimeoutMs });
-    console.log(`[AI_TRACE] AI response received: status=${aiResponse.status}, hasReply=${Boolean(aiResponse.data?.reply)}`);
+    console.log(`[AI] AI response status: ${aiResponse.status}`);
+    console.log(`[AI] AI response content-type: ${aiResponse.headers["content-type"] || "unknown"}`);
 
     const replyText =
       aiResponse.data?.reply ||
@@ -150,14 +155,15 @@ const getAiReply = async (user_id, message, userData, authUser) => {
       };
     }
 
-    console.warn(`[AI_TRACE] AI response missing reply property, fallback used`);
+    console.warn(`[AI] AI response missing reply property, fallback used`);
     return {
       ok: true,
       reply: "I'm right here with you and listening. How are you feeling right now?",
       error: aiResponse.data?.error || null,
     };
   } catch (error) {
-    console.error(`[AI_TRACE] AI request failed: type=${error.code || 'error'}, message=${error.message}`);
+    const status = error.response?.status || (error.code === "ECONNABORTED" ? 504 : 502);
+    console.warn(`[AI] AI request failed: status=${status}, message=${error.message}`);
     return {
       ok: true,
       reply: "I'm right here with you and listening. Take a gentle breath and tell me what's on your mind.",
@@ -295,17 +301,13 @@ export const saveMessage = async (req, res, next) => {
         console.warn("Client SSE socket error notice:", err.message);
       });
 
-      const rawAiUrl = process.env.AI_CHAT_URL || "http://localhost:5000/chat";
-      let aiUrl = rawAiUrl.trim();
-      if (!aiUrl.endsWith("/chat")) {
-        aiUrl = aiUrl.replace(/\/+$/, "") + "/chat";
-      }
-
-      let accumulatedReply = "";
+      const aiUrl = resolveAiUrl();
+      console.log(`[AI] Resolved AI URL: ${aiUrl}`);
+      console.log(`[AI] Sending request to AI service`);
 
       try {
         const aiResponse = await axios.post(
-          aiUrl + "?stream=true",
+          aiUrl,
           {
             user_id,
             userId: user_id,
@@ -317,66 +319,55 @@ export const saveMessage = async (req, res, next) => {
             },
           },
           {
-            responseType: "stream",
             timeout: aiTimeoutMs,
           }
         );
 
-        aiResponse.data.on("data", (chunkBuffer) => {
-          if (!isClientConnected) return;
-          const chunkStr = chunkBuffer.toString();
+        console.log(`[AI] AI response status: ${aiResponse.status}`);
+        console.log(`[AI] AI response content-type: ${aiResponse.headers["content-type"] || "unknown"}`);
+
+        const replyText =
+          aiResponse.data?.reply ||
+          aiResponse.data?.response ||
+          aiResponse.data?.output ||
+          aiResponse.data?.text ||
+          aiResponse.data?.message ||
+          "I'm right here with you.";
+
+        if (isClientConnected) {
           try {
-            res.write(chunkStr);
-          } catch (e) {
-            isClientConnected = false;
-          }
+            res.write(`data: ${JSON.stringify({ text: replyText })}\n\n`);
+            res.write(`data: [DONE]\n\n`);
+            res.end();
+          } catch (e) {}
+        }
 
-          const lines = chunkStr.split("\n");
-          for (const line of lines) {
-            if (line.startsWith("data: ") && !line.includes("[DONE]")) {
-              try {
-                const parsed = JSON.parse(line.substring(6));
-                if (parsed.text) accumulatedReply += parsed.text;
-              } catch (e) {}
-            }
+        if (!req.isDemoUser && replyText.trim()) {
+          try {
+            await supabaseUser
+              .from("conversations")
+              .insert([
+                { user_id, message, sender: "user" },
+                { user_id, message: replyText.trim(), sender: "ai" },
+              ]);
+          } catch (dbErr) {
+            console.warn("Conversations stream DB insert notice:", dbErr.message);
           }
-        });
-
-        aiResponse.data.on("end", async () => {
-          if (!req.isDemoUser && accumulatedReply.trim()) {
-            try {
-              await supabaseUser
-                .from("conversations")
-                .insert([
-                  { user_id, message, sender: "user" },
-                  { user_id, message: accumulatedReply.trim(), sender: "ai" },
-                ]);
-            } catch (dbErr) {
-              console.warn("Conversations stream DB insert notice:", dbErr.message);
-            }
-          }
-          if (isClientConnected) {
-            try { res.end(); } catch (e) {}
-          }
-        });
-
-        aiResponse.data.on("error", (streamErr) => {
-          console.error("AI stream error:", streamErr.message);
-          if (isClientConnected) {
-            try {
-              res.write(`data: ${JSON.stringify({ error: streamErr.message })}\n\n`);
-              res.write(`data: [DONE]\n\n`);
-              res.end();
-            } catch (e) {}
-          }
-        });
+        }
 
         return;
       } catch (err) {
-        console.error("Stream init error:", err.message);
+        const status = err.response?.status || (err.code === "ECONNABORTED" ? 504 : 502);
+        console.warn(`[AI] AI request failed: status=${status}, message=${err.message}`);
+
+        const isQuota = err.response?.status === 429 || (err.message && err.message.includes("429"));
+        const safeErrorMessage = isQuota
+          ? "AI quota is currently exhausted. Please try again later."
+          : "I'm having trouble responding right now. Please try again in a moment.";
+
         if (isClientConnected) {
           try {
-            res.write(`data: ${JSON.stringify({ error: err.message })}\n\n`);
+            res.write(`data: ${JSON.stringify({ error: safeErrorMessage })}\n\n`);
             res.write(`data: [DONE]\n\n`);
             res.end();
           } catch (e) {}

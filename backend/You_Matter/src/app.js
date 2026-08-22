@@ -10,6 +10,7 @@ import { apiLimiter } from "./middleware/rateLimiter.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
+app.set("trust proxy", 1);
 
 const allowedOrigins = [
   "https://you-matter-reborn-641a.vercel.app",
