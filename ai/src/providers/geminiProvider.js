@@ -50,6 +50,24 @@ function isNotFoundError(err) {
   );
 }
 
+async function executeWithRetry(fn, maxRetries = 1) {
+  let attempt = 0;
+  while (true) {
+    try {
+      return await fn();
+    } catch (err) {
+      if (isQuotaError(err) && attempt < maxRetries) {
+        attempt++;
+        const backoffMs = Math.floor(500 + Math.random() * 500); // 500ms + random jitter
+        console.warn(`[AI] Gemini 429 quota notice - retrying attempt ${attempt}/${maxRetries} after ${backoffMs}ms...`);
+        await new Promise((resolve) => setTimeout(resolve, backoffMs));
+        continue;
+      }
+      throw err;
+    }
+  }
+}
+
 export class GeminiProvider {
   constructor() {
     this.name = "GeminiProvider";
@@ -57,7 +75,7 @@ export class GeminiProvider {
 
   getModelsToTry() {
     const envModel = (process.env.GEMINI_MODEL || "").trim();
-    const primary = envModel || "gemini-2.5-flash";
+    const primary = envModel || "gemini-3.5-flash-lite";
     return [primary];
   }
 
@@ -71,16 +89,18 @@ export class GeminiProvider {
     for (const modelName of models) {
       try {
         console.log(`[AI] Model: ${modelName}`);
-        const response = await fetchWithTimeout(
-          ai.models.generateContent({
-            model: modelName,
-            contents: promptText,
-            config: {
-              systemInstruction,
-              maxOutputTokens,
-            },
-          }),
-          timeoutMs
+        const response = await executeWithRetry(() =>
+          fetchWithTimeout(
+            ai.models.generateContent({
+              model: modelName,
+              contents: promptText,
+              config: {
+                systemInstruction,
+                maxOutputTokens,
+              },
+            }),
+            timeoutMs
+          )
         );
 
         const responseText = response?.text;
@@ -134,16 +154,18 @@ export class GeminiProvider {
     for (const modelName of models) {
       try {
         console.log(`[AI] Model: ${modelName}`);
-        const responseStream = await fetchWithTimeout(
-          ai.models.generateContentStream({
-            model: modelName,
-            contents: promptText,
-            config: {
-              systemInstruction,
-              maxOutputTokens,
-            },
-          }),
-          timeoutMs
+        const responseStream = await executeWithRetry(() =>
+          fetchWithTimeout(
+            ai.models.generateContentStream({
+              model: modelName,
+              contents: promptText,
+              config: {
+                systemInstruction,
+                maxOutputTokens,
+              },
+            }),
+            timeoutMs
+          )
         );
 
         let fullText = "";
@@ -197,7 +219,7 @@ export class GeminiProvider {
 
   async healthCheck() {
     const models = this.getModelsToTry();
-    const primaryModel = models[0] || "gemini-2.5-flash";
+    const primaryModel = models[0] || "gemini-3.5-flash-lite";
     try {
       const response = await fetchWithTimeout(
         ai.models.generateContent({
