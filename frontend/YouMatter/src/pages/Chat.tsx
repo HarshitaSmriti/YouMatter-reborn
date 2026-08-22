@@ -743,7 +743,6 @@ export default function Chat() {
                   <textarea
                     rows={1}
                     value={message}
-                    disabled={isLoading}
                     onChange={(e) => {
                       setMessage(e.target.value);
                       e.target.style.height = "auto";
@@ -752,7 +751,9 @@ export default function Chat() {
                     onKeyDown={(e) => {
                       if (e.key === "Enter" && !e.shiftKey) {
                         e.preventDefault();
-                        sendMessage();
+                        if (!isLoading) {
+                          sendMessage();
+                        }
                       }
                     }}
                     placeholder="Type your message… (Enter to send)"
