@@ -12,6 +12,28 @@ import { errorHandler } from "./middleware/errorHandler.js";
 const app = express();
 app.set("trust proxy", 1);
 
+// Lightweight Keep-Alive Endpoint — Placed at the absolute top of Express stack
+// Responds immediately with HTTP 200 OK (2 bytes) before any middleware, CORS, rate limiting, or DB calls.
+app.get('/health', (req, res) => {
+  console.log('[HEALTH] OK');
+  res.setHeader('Content-Type', 'text/plain');
+  res.status(200).send("OK");
+});
+
+app.get('/health/live', (req, res) => {
+  res.status(200).json({ status: "alive" });
+});
+
+app.get('/health/ready', async (req, res) => {
+  try {
+    const { error } = await supabase.from('users').select('id').limit(1);
+    if (error) throw error;
+    res.status(200).json({ status: "ready", database: "connected" });
+  } catch (err) {
+    res.status(503).json({ status: "unready", database: "disconnected", error: err.message });
+  }
+});
+
 const allowedOrigins = [
   "https://you-matter-reborn-641a.vercel.app",
   "https://you-matter-seven.vercel.app",
@@ -77,47 +99,12 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(morgan("dev"));
 app.use(apiLimiter);
 
-// Health Check Endpoints
-app.get('/health', (req, res) => {
-  res.status(200).send("OK");
-});
-
-app.get('/health/live', (req, res) => {
-  res.status(200).json({ status: "alive" });
-});
-
-app.get('/health/ready', async (req, res) => {
-  try {
-    const { error } = await supabase.from('users').select('count', { count: 'exact', head: true });
-    if (error) throw error;
-    res.status(200).json({ status: "ready", database: "connected" });
-  } catch (err) {
-    res.status(503).json({ status: "unready", database: "disconnected", error: err.message });
-  }
-});
-
-// Base API route
-app.get('/api/v1', (req, res) => {
-  res.json({
-    message: "YouMatter / NeoMate API v1 is running",
-    version: "1.0.0",
-    health: "/health"
-  });
-});
-
-// Main routes
+// API Routes
 app.use('/api/v1', userRoutes);
-app.use('/api/v1/user', userRoutes);
-app.use('/api/v1', guardianRoutes);
-app.use('/api/v1/user', guardianRoutes);
+app.use('/api/v1/guardian', guardianRoutes);
 app.use('/api/v1/ai', aiRoutes);
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ success: false, error: { code: "NOT_FOUND", message: "Route not found" } });
-});
-
-// Error handler
+// Global Error Handler
 app.use(errorHandler);
 
 export default app;
