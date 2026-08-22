@@ -12,7 +12,7 @@ app.use(helmet());
 app.use(express.json({ limit: "5mb" }));
 
 app.get("/health", (req, res) => {
-  res.json({ status: "healthy", service: "YouMatter AI Microservice", timestamp: new Date().toISOString() });
+  res.status(200).send("OK");
 });
 
 app.get("/health/live", (req, res) => {
