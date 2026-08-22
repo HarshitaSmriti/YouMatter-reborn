@@ -632,6 +632,10 @@ export default function Chat() {
               {displayMessages.map((msg, index) => {
                 const isUser = (msg.sender || "").toLowerCase() === "user";
                 const content = msg.message || msg.text || "";
+                
+                // Hide duplicate empty AI box while waiting for streaming response
+                if (!isUser && !content.trim()) return null;
+
                 return (
                   <div
                     key={msg.id || `${msg.sender}_${msg.timestamp}_${index}`}
@@ -639,28 +643,28 @@ export default function Chat() {
                     style={{ animation: "fadeUp 0.2s ease-out" }}
                   >
                     {!isUser ? (
-                      <div className="flex max-w-[90%] items-start gap-2 sm:max-w-[75%]">
+                      <div className="flex max-w-[92%] sm:max-w-[80%] md:max-w-[75%] items-start gap-2">
                         <div
-                          className="mt-1 flex h-8 w-8 shrink-0 items-center justify-center rounded-xl"
+                          className="mt-1 flex h-7 w-7 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-xl"
                           style={{ backgroundColor: theme.accent + "22" }}
                         >
                           <Sparkles size={13} style={{ color: theme.accent }} />
                         </div>
                         <div
-                          className="rounded-[20px] rounded-tl-sm p-4 border shadow-sm transition-all"
+                          className="rounded-[20px] rounded-tl-sm p-3.5 sm:p-4 border shadow-sm transition-all"
                           style={{ backgroundColor: theme.cardBg, borderColor: theme.border, color: theme.text }}
                         >
-                          <p className="text-sm leading-7 sm:text-[15px] whitespace-pre-wrap font-medium">
+                          <p className="text-xs sm:text-sm md:text-[15px] leading-relaxed whitespace-pre-wrap font-medium">
                             {content}
                           </p>
                         </div>
                       </div>
                     ) : (
                       <div
-                        className="max-w-[90%] rounded-[20px] rounded-tr-sm px-4 py-3 font-semibold shadow-md sm:max-w-[75%]"
+                        className="max-w-[92%] sm:max-w-[80%] md:max-w-[75%] rounded-[20px] rounded-tr-sm px-3.5 py-2.5 sm:px-4 sm:py-3 font-semibold shadow-md"
                         style={{ backgroundColor: theme.accent, color: "#ffffff" }}
                       >
-                        <p className="text-sm leading-7 sm:text-[15px] whitespace-pre-wrap">
+                        <p className="text-xs sm:text-sm md:text-[15px] leading-relaxed whitespace-pre-wrap">
                           {content}
                         </p>
                       </div>

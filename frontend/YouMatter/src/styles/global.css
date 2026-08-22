@@ -6,6 +6,13 @@
 
 html {
   scroll-behavior: smooth;
+  font-size: clamp(14px, 0.85vw + 11px, 16px);
+}
+
+@media (max-width: 639px) {
+  html {
+    font-size: 14px;
+  }
 }
 
 body {
