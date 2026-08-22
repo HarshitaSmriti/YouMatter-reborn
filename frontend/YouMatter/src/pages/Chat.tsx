@@ -102,7 +102,25 @@ export default function Chat() {
   const [viewingSession, setViewingSession] = useState<ChatSession | null>(null);
 
   const bottomRef = useRef<HTMLDivElement>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+  const userScrolledUpRef = useRef(false);
   const wsRef = useRef<WebSocket | null>(null);
+
+  const scrollToBottom = (instant = false) => {
+    if (!chatContainerRef.current) return;
+    const { scrollHeight, clientHeight } = chatContainerRef.current;
+    chatContainerRef.current.scrollTo({
+      top: scrollHeight - clientHeight,
+      behavior: instant ? "auto" : "smooth",
+    });
+  };
+
+  const handleScroll = () => {
+    if (!chatContainerRef.current) return;
+    const { scrollTop, scrollHeight, clientHeight } = chatContainerRef.current;
+    const isNearBottom = scrollHeight - scrollTop - clientHeight < 120;
+    userScrolledUpRef.current = !isNearBottom;
+  };
 
   useEffect(() => {
     const envWs = import.meta.env.VITE_WS_URL;
@@ -182,8 +200,10 @@ export default function Chat() {
   }, []);
 
   useEffect(() => {
-    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, isLoading]);
+    if (!userScrolledUpRef.current) {
+      scrollToBottom(messages.length <= 2);
+    }
+  }, [messages.length]);
 
   const persistSession = (msgsToSave: Message[]) => {
     if (!userId || msgsToSave.length === 0) return;
@@ -320,6 +340,9 @@ export default function Chat() {
                       : msg
                   )
                 );
+                if (!userScrolledUpRef.current && chatContainerRef.current) {
+                  chatContainerRef.current.scrollTop = chatContainerRef.current.scrollHeight;
+                }
               }
             } catch (e) {}
           }
@@ -608,7 +631,11 @@ export default function Chat() {
         {/* CHAT AREA */}
         <div className="relative flex flex-1 flex-col overflow-hidden min-h-0">
           {/* MESSAGES */}
-          <div className="relative flex-1 overflow-y-auto px-4 py-5 sm:px-6 min-h-0">
+          <div
+            ref={chatContainerRef}
+            onScroll={handleScroll}
+            className="relative flex-1 overflow-y-auto px-4 py-5 sm:px-6 min-h-0"
+          >
             <div className="mx-auto flex max-w-2xl flex-col gap-4">
               {/* EMPTY STATE */}
               {displayMessages.length === 0 && (
