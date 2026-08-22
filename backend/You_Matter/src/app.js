@@ -79,7 +79,7 @@ app.use(apiLimiter);
 
 // Health Check Endpoints
 app.get('/health', (req, res) => {
-  res.json({ status: "healthy", timestamp: new Date().toISOString(), service: "YouMatter Backend API" });
+  res.status(200).send("OK");
 });
 
 app.get('/health/live', (req, res) => {
