@@ -4,6 +4,15 @@
   box-sizing: border-box;
 }
 
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100dvh;
+  margin: 0;
+  padding: 0;
+}
+
 html {
   scroll-behavior: smooth;
   font-size: clamp(14px, 0.85vw + 11px, 16px);
@@ -16,7 +25,7 @@ html {
 }
 
 body {
-  margin: 0;
+  overflow-x: hidden;
   background: #fbfaff;
   font-family:
     Inter,

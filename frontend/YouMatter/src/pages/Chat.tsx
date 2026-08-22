@@ -423,7 +423,7 @@ export default function Chat() {
 
   return (
     <div
-      className="flex h-screen flex-col lg:flex-row overflow-hidden transition-colors duration-500"
+      className="flex h-[100dvh] max-h-[100dvh] w-full flex-col lg:flex-row overflow-hidden transition-colors duration-500"
       style={{ backgroundColor: theme.pageBg }}
     >
       {/* SIDEBAR */}
@@ -511,7 +511,7 @@ export default function Chat() {
       )}
 
       {/* MAIN */}
-      <main className="flex flex-1 flex-col overflow-hidden">
+      <main className="flex flex-1 flex-col overflow-hidden min-h-0 min-w-0">
         {/* TOPBAR */}
         <div
           className="border-b px-4 py-3 backdrop-blur-md sm:px-6 transition-colors duration-500"
@@ -606,9 +606,9 @@ export default function Chat() {
         </div>
 
         {/* CHAT AREA */}
-        <div className="relative flex flex-1 flex-col overflow-hidden">
+        <div className="relative flex flex-1 flex-col overflow-hidden min-h-0">
           {/* MESSAGES */}
-          <div className="relative flex-1 overflow-y-auto px-4 py-5 sm:px-6">
+          <div className="relative flex-1 overflow-y-auto px-4 py-5 sm:px-6 min-h-0">
             <div className="mx-auto flex max-w-2xl flex-col gap-4">
               {/* EMPTY STATE */}
               {displayMessages.length === 0 && (
@@ -654,7 +654,7 @@ export default function Chat() {
                           className="rounded-[20px] rounded-tl-sm p-3.5 sm:p-4 border shadow-sm transition-all"
                           style={{ backgroundColor: theme.cardBg, borderColor: theme.border, color: theme.text }}
                         >
-                          <p className="text-xs sm:text-sm md:text-[15px] leading-relaxed whitespace-pre-wrap font-medium">
+                          <p className="text-xs sm:text-sm md:text-[15px] leading-relaxed whitespace-pre-wrap font-medium [overflow-wrap:anywhere] break-words max-w-full">
                             {content}
                           </p>
                         </div>
@@ -664,7 +664,7 @@ export default function Chat() {
                         className="max-w-[92%] sm:max-w-[80%] md:max-w-[75%] rounded-[20px] rounded-tr-sm px-3.5 py-2.5 sm:px-4 sm:py-3 font-semibold shadow-md"
                         style={{ backgroundColor: theme.accent, color: "#ffffff" }}
                       >
-                        <p className="text-xs sm:text-sm md:text-[15px] leading-relaxed whitespace-pre-wrap">
+                        <p className="text-xs sm:text-sm md:text-[15px] leading-relaxed whitespace-pre-wrap [overflow-wrap:anywhere] break-words max-w-full">
                           {content}
                         </p>
                       </div>
@@ -711,8 +711,12 @@ export default function Chat() {
           {/* INPUT SECTION */}
           {!viewingSession && (
             <div
-              className="border-t px-4 py-4 backdrop-blur-md sm:px-6 transition-colors duration-500"
-              style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
+              className="border-t px-4 py-3 sm:px-6 backdrop-blur-md transition-colors duration-500 shrink-0"
+              style={{
+                backgroundColor: theme.cardBg,
+                borderColor: theme.border,
+                paddingBottom: "max(12px, env(safe-area-inset-bottom))",
+              }}
             >
               <div className="mx-auto max-w-2xl">
                 {/* PROMPTS — shown only before first message */}

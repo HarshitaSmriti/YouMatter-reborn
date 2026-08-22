@@ -199,7 +199,7 @@ function Sidebar() {
 
       {/* DESKTOP SIDEBAR */}
       <aside
-        className="sticky top-0 hidden h-screen max-h-screen w-[280px] flex-col justify-between overflow-y-auto border-r px-5 py-6 lg:flex shrink-0 transition-colors duration-500 backdrop-blur-xl shadow-xs"
+        className="sticky top-0 hidden h-[100dvh] max-h-[100dvh] w-[280px] flex-col justify-between overflow-y-auto border-r px-5 py-6 lg:flex shrink-0 transition-colors duration-500 backdrop-blur-xl shadow-xs"
         style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
       >
         {/* LOGO */}
