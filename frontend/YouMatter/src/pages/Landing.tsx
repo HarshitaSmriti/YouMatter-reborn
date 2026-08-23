@@ -252,7 +252,7 @@ function Landing() {
         <div className="relative z-20">
           {/* BADGE */}
           <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-[#ddd5ff] bg-[#f2edff] px-5 py-2.5 text-[14px] font-semibold text-[#6548ee]">
-            ✦ {landingData.hero.badge}
+            {landingData.hero.badge}
           </div>
 
           {/* HEADING */}
@@ -324,14 +324,6 @@ function Landing() {
 
           {/* DECOR */}
           <div className="absolute right-10 top-6 hidden h-32 w-36 rounded-t-full bg-[#ece4ff] lg:block" />
-
-          <div className="absolute left-16 top-44 text-3xl text-[#d8ccff]">
-            ✦
-          </div>
-
-          <div className="absolute right-[18%] top-48 text-3xl text-[#d8ccff]">
-            ✦
-          </div>
 
           {/* CHAT */}
           <div className="absolute left-0 top-16 z-20">

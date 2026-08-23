@@ -43,7 +43,7 @@ export const LIGHT_MOOD_THEMES: Record<string, MoodTheme> = {
     orb1: "#fde68a",
     orb2: "#fcd34d",
     border: "#fed7aa",
-    quote: "Keep shining! Your joy radiates around you. ✨",
+    quote: "Keep shining! Your joy radiates around you.",
   },
   calm: {
     id: "calm",
@@ -60,7 +60,7 @@ export const LIGHT_MOOD_THEMES: Record<string, MoodTheme> = {
     orb1: "#a7f3d0",
     orb2: "#6ee7b7",
     border: "#a7f3d0",
-    quote: "Peace comes from within. Take a gentle breath. 🌿",
+    quote: "Peace comes from within. Take a gentle breath.",
   },
   neutral: {
     id: "neutral",
@@ -77,7 +77,7 @@ export const LIGHT_MOOD_THEMES: Record<string, MoodTheme> = {
     orb1: "#c4b5fd",
     orb2: "#a78bfa",
     border: "#e2e8f0",
-    quote: "Every moment is a fresh start. You're doing great. 💜",
+    quote: "Every moment is a fresh start. You're doing great.",
   },
   anxious: {
     id: "anxious",
@@ -94,7 +94,7 @@ export const LIGHT_MOOD_THEMES: Record<string, MoodTheme> = {
     orb1: "#bae6fd",
     orb2: "#7dd3fc",
     border: "#bae6fd",
-    quote: "Pause and ground yourself. You are safe here. ☁️",
+    quote: "Pause and ground yourself. You are safe here.",
   },
   sad: {
     id: "sad",
@@ -111,7 +111,7 @@ export const LIGHT_MOOD_THEMES: Record<string, MoodTheme> = {
     orb1: "#c7d2fe",
     orb2: "#a5b4fc",
     border: "#c7d2fe",
-    quote: "Your feelings are valid. Take all the time you need. 🌧️",
+    quote: "Your feelings are valid. Take all the time you need.",
   },
   angry: {
     id: "angry",
@@ -128,7 +128,7 @@ export const LIGHT_MOOD_THEMES: Record<string, MoodTheme> = {
     orb1: "#fecdd3",
     orb2: "#fda4af",
     border: "#fecdd3",
-    quote: "Let it out safely. Take a deep breath with us. 🔥",
+    quote: "Let it out safely. Take a deep breath with us.",
   },
 };
 
@@ -148,7 +148,7 @@ export const DARK_MOOD_THEMES: Record<string, MoodTheme> = {
     orb1: "#b45309",
     orb2: "#d97706",
     border: "#3a2e1c",
-    quote: "Keep shining! Your joy radiates around you. ✨",
+    quote: "Keep shining! Your joy radiates around you.",
   },
   calm: {
     id: "calm",
@@ -165,7 +165,7 @@ export const DARK_MOOD_THEMES: Record<string, MoodTheme> = {
     orb1: "#047857",
     orb2: "#10b981",
     border: "#1d4838",
-    quote: "Peace comes from within. Take a gentle breath. 🌿",
+    quote: "Peace comes from within. Take a gentle breath.",
   },
   neutral: {
     id: "neutral",
@@ -182,7 +182,7 @@ export const DARK_MOOD_THEMES: Record<string, MoodTheme> = {
     orb1: "#6d28d9",
     orb2: "#8b5cf6",
     border: "#374151",
-    quote: "Every moment is a fresh start. You're doing great. 💜",
+    quote: "Every moment is a fresh start. You're doing great.",
   },
   anxious: {
     id: "anxious",
@@ -199,7 +199,7 @@ export const DARK_MOOD_THEMES: Record<string, MoodTheme> = {
     orb1: "#0369a1",
     orb2: "#0ea5e9",
     border: "#184567",
-    quote: "Pause and ground yourself. You are safe here. ☁️",
+    quote: "Pause and ground yourself. You are safe here.",
   },
   sad: {
     id: "sad",
@@ -216,7 +216,7 @@ export const DARK_MOOD_THEMES: Record<string, MoodTheme> = {
     orb1: "#4338ca",
     orb2: "#6366f1",
     border: "#273363",
-    quote: "Your feelings are valid. Take all the time you need. 🌧️",
+    quote: "Your feelings are valid. Take all the time you need.",
   },
   angry: {
     id: "angry",
@@ -233,7 +233,7 @@ export const DARK_MOOD_THEMES: Record<string, MoodTheme> = {
     orb1: "#be123c",
     orb2: "#f43f5e",
     border: "#4d1a27",
-    quote: "Let it out safely. Take a deep breath with us. 🔥",
+    quote: "Let it out safely. Take a deep breath with us.",
   },
 };
 

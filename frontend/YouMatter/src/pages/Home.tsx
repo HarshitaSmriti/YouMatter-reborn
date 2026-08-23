@@ -270,9 +270,65 @@ function Home() {
 
   const [moodHistory, setMoodHistory] = useState<MoodEntry[]>([]);
   const [greeting, setGreeting] = useState("Good day");
+  const [latestJournal, setLatestJournal] = useState<{ title: string; content: string; date: string } | null>(null);
 
   const mood = MOOD_CONFIG[activeMood] || MOOD_CONFIG.neutral;
   const MoodIcon = mood.Icon;
+
+  const fetchBackendData = async () => {
+    try {
+      const moodRes = await api.get("/mood");
+      const backendMoods = moodRes.data.data || [];
+      if (backendMoods.length > 0) {
+        const parsedMoods: MoodEntry[] = backendMoods
+          .slice()
+          .reverse()
+          .slice(-7)
+          .map((item: any) => {
+            const mKey = (item.mood_label || "neutral").toLowerCase();
+            const createdDate = new Date(item.created_at || Date.now());
+            const timeStr = createdDate.toLocaleTimeString("en-IN", {
+              hour: "2-digit",
+              minute: "2-digit",
+              hour12: true,
+            });
+            return {
+              mood: mKey,
+              time: timeStr,
+              value: item.mood_score ?? MOOD_VALUES[mKey] ?? 3,
+            };
+          });
+        setMoodHistory(parsedMoods);
+        const latestBackendMood = (backendMoods[0]?.mood_label || "").toLowerCase();
+        if (MOOD_CONFIG[latestBackendMood]) {
+          setMood(latestBackendMood);
+        }
+      }
+    } catch (err) {
+      console.warn("Unable to fetch mood history from backend:", err);
+    }
+
+    try {
+      const journalRes = await api.get("/diary");
+      const backendJournals = journalRes.data.data || [];
+      if (backendJournals.length > 0) {
+        const top = backendJournals[0];
+        const displayTitle = top.title || top.content?.split("\n\n")[0] || "Latest Reflection";
+        const displayContent = top.title ? top.content : (top.content?.split("\n\n").slice(1).join("\n\n") || top.content);
+        const displayDate = new Date(top.created_at).toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+        });
+        setLatestJournal({
+          title: displayTitle,
+          content: displayContent,
+          date: displayDate,
+        });
+      }
+    } catch (err) {
+      console.warn("Unable to fetch latest journal from backend:", err);
+    }
+  };
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -301,18 +357,15 @@ function Home() {
 
     const saved = localStorage.getItem("youmatter_mood_history");
     if (saved) {
-      try { setMoodHistory(JSON.parse(saved)); } catch (err) { console.warn("Unable to load mood history", err); }
+      try { setMoodHistory(JSON.parse(saved)); } catch (err) { console.warn("Unable to load local mood history", err); }
     }
     const lastMood = localStorage.getItem("youmatter_last_mood");
     if (lastMood && MOOD_CONFIG[lastMood]) setMood(lastMood);
 
-    const testBackend = async () => {
-      try { await api.get("/users"); } catch (err) { console.warn("Backend health check failed", err); }
-    };
-    testBackend();
+    fetchBackendData();
   }, []);
 
-  const handleMoodChange = (newMood: string) => {
+  const handleMoodChange = async (newMood: string) => {
     if (!MOOD_CONFIG[newMood]) return;
     setMood(newMood);
 
@@ -327,11 +380,23 @@ function Home() {
       time: timeStr,
       value: MOOD_VALUES[newMood] ?? 3,
     };
+
     setMoodHistory((prev) => {
       const updated = [...prev, entry].slice(-7);
       localStorage.setItem("youmatter_mood_history", JSON.stringify(updated));
       return updated;
     });
+
+    try {
+      await api.post("/mood", {
+        mood_score: MOOD_VALUES[newMood] ?? 3,
+        mood_label: newMood,
+        note: `User checked in as ${newMood} from Home page`,
+      });
+      fetchBackendData();
+    } catch (err) {
+      console.warn("Failed to sync mood to backend:", err);
+    }
   };
 
   const dashItems = [
@@ -626,9 +691,21 @@ function Home() {
                 </button>
               </div>
               <div className="mt-4 rounded-2xl p-4 min-h-[80px]" style={{ backgroundColor: theme.soft }}>
-                <p className="text-sm leading-7" style={{ color: theme.subtext }}>
-                  Your latest journal entry will appear here.
-                </p>
+                {latestJournal ? (
+                  <div>
+                    <div className="flex items-center justify-between gap-2 mb-1">
+                      <h4 className="text-sm font-black truncate" style={{ color: theme.text }}>{latestJournal.title}</h4>
+                      <span className="text-[10px] font-bold shrink-0 opacity-70" style={{ color: theme.subtext }}>{latestJournal.date}</span>
+                    </div>
+                    <p className="text-xs leading-5 line-clamp-3 font-medium" style={{ color: theme.subtext }}>
+                      {latestJournal.content}
+                    </p>
+                  </div>
+                ) : (
+                  <p className="text-sm leading-7" style={{ color: theme.subtext }}>
+                    Your latest journal entry will appear here.
+                  </p>
+                )}
               </div>
             </div>
 

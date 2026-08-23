@@ -49,7 +49,7 @@
     --sidebar-foreground: 240 20% 20%;
   }
 
-  /* 🌙 DARK MODE — FIXED PROPERLY */
+  /* DARK MODE — FIXED PROPERLY */
   .dark {
     --background: 235 35% 8%;
     --foreground: 0 0% 96%;
@@ -94,7 +94,7 @@
 }
 
 @layer components {
-  /* 🔥 FIXED GLASS EFFECT */
+  /* FIXED GLASS EFFECT */
   .glass-card {
     @apply bg-white/60 dark:bg-white/5 backdrop-blur-xl border border-white/30 dark:border-white/10 shadow-lg;
   }
@@ -103,7 +103,7 @@
     @apply bg-white/80 dark:bg-white/10 backdrop-blur-2xl border border-white/40 dark:border-white/10 shadow-xl;
   }
 
-  /* 🔥 BETTER BACKGROUND */
+  /* BETTER BACKGROUND */
   .cloud-bg {
     background:
       radial-gradient(ellipse 80% 60% at 20% 80%, hsl(252 70% 65% / 0.15) 0%, transparent 70%),

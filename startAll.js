@@ -10,7 +10,7 @@ const services = [
   { name: "FRONTEND", color: "\x1b[36m", cwd: path.join(__dirname, "frontend/YouMatter"), cmd: "npm", args: ["run", "dev"] },
 ];
 
-console.log("🚀 Starting YouMatter AI, Backend, and Frontend services...\n");
+console.log("Starting YouMatter AI, Backend, and Frontend services...\n");
 
 services.forEach((service) => {
   const proc = spawn(service.cmd, service.args, {

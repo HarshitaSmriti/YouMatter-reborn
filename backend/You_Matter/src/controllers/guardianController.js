@@ -359,7 +359,6 @@ export const verifyGuardianEmail = async (req, res) => {
       </head>
       <body>
         <div class="card">
-          <div class="icon">💜</div>
           <h2>Trusted Contact Verified!</h2>
           <p>Thank you for verifying your email address. You are now confirmed as a trusted safety contact on YouMatter.</p>
         </div>

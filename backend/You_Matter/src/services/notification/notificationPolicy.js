@@ -2,7 +2,7 @@ import supabase from '../../config/supabaseClient.js';
 
 class NotificationPolicyEngine {
   async evaluateNotificationRequest({ userId, riskLevel, notificationType = 'HIGH_RISK_ALERT' }) {
-    console.log(`🔍 Policy Engine Evaluating: User ${userId} | Risk: ${riskLevel} | Type: ${notificationType}`);
+    console.log(`Policy Engine Evaluating: User ${userId} | Risk: ${riskLevel} | Type: ${notificationType}`);
 
     // 1. Only HIGH risk signals trigger guardian notifications
     if (riskLevel !== 'HIGH') {

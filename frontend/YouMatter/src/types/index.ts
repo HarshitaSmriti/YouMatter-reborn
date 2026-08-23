@@ -79,11 +79,11 @@ export interface ApiState<T> {
 }
 
 export const MOODS = [
-  { label: "Happy", value: "happy", emoji: "😊" },
-  { label: "Sad", value: "sad", emoji: "😢" },
-  { label: "Angry", value: "angry", emoji: "😠" },
-  { label: "Anxious", value: "anxious", emoji: "😰" },
-  { label: "Neutral", value: "neutral", emoji: "😐" },
+  { label: "Happy", value: "happy" },
+  { label: "Sad", value: "sad" },
+  { label: "Angry", value: "angry" },
+  { label: "Anxious", value: "anxious" },
+  { label: "Neutral", value: "neutral" },
 ];
 
 export const BREATHING_TECHNIQUES: BreathingTechnique[] = [

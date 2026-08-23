@@ -16,7 +16,7 @@ export const requireAuth = async (req, res, next) => {
 
     if (!token || token === "demo-guest-token" || token.startsWith("demo-")) {
       req.isDemoUser = true;
-      req.user = { id: "demo-user-123", email: "guest@youmatter.local", role: "user", user_metadata: { full_name: "Guest User" } };
+      req.user = { id: "00000000-0000-0000-0000-000000000000", email: "guest@youmatter.local", role: "user", user_metadata: { full_name: "Guest User" } };
       return next();
     }
 
@@ -50,7 +50,7 @@ export const optionalVerifyUser = async (req, res, next) => {
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
       req.isDemoUser = true;
-      req.user = { id: "demo-user-123", email: "guest@youmatter.local", role: "user", user_metadata: { full_name: "Guest User" } };
+      req.user = { id: "00000000-0000-0000-0000-000000000000", email: "guest@youmatter.local", role: "user", user_metadata: { full_name: "Guest User" } };
       return next();
     }
 
@@ -58,7 +58,7 @@ export const optionalVerifyUser = async (req, res, next) => {
 
     if (!token || token === "demo-guest-token" || token.startsWith("demo-")) {
       req.isDemoUser = true;
-      req.user = { id: "demo-user-123", email: "guest@youmatter.local", role: "user", user_metadata: { full_name: "Guest User" } };
+      req.user = { id: "00000000-0000-0000-0000-000000000000", email: "guest@youmatter.local", role: "user", user_metadata: { full_name: "Guest User" } };
       return next();
     }
 
@@ -66,7 +66,7 @@ export const optionalVerifyUser = async (req, res, next) => {
 
     if (error || !data?.user) {
       req.isDemoUser = true;
-      req.user = { id: "demo-user-123", email: "guest@youmatter.local", role: "user", user_metadata: { full_name: "Guest User" } };
+      req.user = { id: "00000000-0000-0000-0000-000000000000", email: "guest@youmatter.local", role: "user", user_metadata: { full_name: "Guest User" } };
       return next();
     }
 
@@ -78,12 +78,12 @@ export const optionalVerifyUser = async (req, res, next) => {
     next();
   } catch (err) {
     req.isDemoUser = true;
-    req.user = { id: "demo-user-123", email: "guest@youmatter.local", role: "user", user_metadata: { full_name: "Guest User" } };
+    req.user = { id: "00000000-0000-0000-0000-000000000000", email: "guest@youmatter.local", role: "user", user_metadata: { full_name: "Guest User" } };
     next();
   }
 };
 
-export const verifyUser = optionalVerifyUser;
+export const verifyUser = requireAuth;
 
 // Role-based authorization middleware
 export const authorizeRole = (...allowedRoles) => {

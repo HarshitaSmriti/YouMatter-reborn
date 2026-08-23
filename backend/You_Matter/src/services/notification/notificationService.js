@@ -4,7 +4,7 @@ import notificationQueue from './notificationQueue.js';
 
 class NotificationService {
   async processCrisisNotification({ userId, riskLevel, userName = 'User', triggerSource = 'AI_SAFETY_ENGINE' }) {
-    console.log(`🔔 Processing Crisis Notification Request for User: ${userId}`);
+    console.log(`Processing Crisis Notification Request for User: ${userId}`);
 
     // 1. Log Crisis Event
     const { data: crisisEvent, error: crisisErr } = await supabase
@@ -32,7 +32,7 @@ class NotificationService {
     });
 
     if (!evaluation.allowed) {
-      console.log(`⛔ Notification Blocked by Policy Engine: ${evaluation.reason}`);
+      console.log(`Notification Blocked by Policy Engine: ${evaluation.reason}`);
 
       // Record Blocked Audit Log
       await supabase.from('notifications').insert([

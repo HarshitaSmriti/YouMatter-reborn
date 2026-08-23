@@ -69,27 +69,35 @@ export default function MoodTracker() {
   const [selectedMood, setSelectedMood] = useState<MoodKey | null>(null);
   const [moodLog, setMoodLog] = useState<MoodEntry[]>([]);
 
-  useEffect(() => {
-    const fetchMoods = async () => {
-      try {
-        const res = await api.get("/mood");
-        const backendData = res.data.data || [];
-        if (backendData.length > 0) {
-          const parsedLog: MoodEntry[] = backendData.map((item: any) => ({
+  const fetchMoods = async () => {
+    try {
+      const res = await api.get("/mood");
+      const backendData = res.data.data || [];
+      if (backendData.length > 0) {
+        const parsedLog: MoodEntry[] = backendData
+          .slice()
+          .reverse()
+          .map((item: any) => ({
             mood: (item.mood_label || "neutral").toLowerCase() as MoodKey,
             timestamp: new Date(item.created_at).getTime(),
           }));
-          setMoodLog(parsedLog);
-        } else {
-          const saved = localStorage.getItem(getStorageKey());
-          if (saved) setMoodLog(JSON.parse(saved));
+        setMoodLog(parsedLog);
+        if (parsedLog.length > 0) {
+          const latestMood = parsedLog[parsedLog.length - 1].mood;
+          setSelectedMood(latestMood);
         }
-      } catch (err) {
-        console.warn("Unable to fetch mood from backend", err);
+      } else {
         const saved = localStorage.getItem(getStorageKey());
         if (saved) setMoodLog(JSON.parse(saved));
       }
-    };
+    } catch (err) {
+      console.warn("Unable to fetch mood from backend", err);
+      const saved = localStorage.getItem(getStorageKey());
+      if (saved) setMoodLog(JSON.parse(saved));
+    }
+  };
+
+  useEffect(() => {
     fetchMoods();
   }, []);
 
@@ -104,7 +112,6 @@ export default function MoodTracker() {
   const handleSelect = async (key: MoodKey) => {
     setSelectedMood(key);
     setMood(key);
-    setMoodLog((prev) => [...prev, { mood: key, timestamp: Date.now() }]);
     try {
       const moodScoreMap: Record<MoodKey, number> = {
         happy: 6, calm: 5, neutral: 4, anxious: 3, sad: 2, angry: 1,
@@ -114,8 +121,10 @@ export default function MoodTracker() {
         mood_label: key,
         note: `User logged ${key} mood`,
       });
+      await fetchMoods();
     } catch (err) {
       console.warn("Failed to sync mood to backend:", err);
+      setMoodLog((prev) => [...prev, { mood: key, timestamp: Date.now() }]);
     }
   };
 

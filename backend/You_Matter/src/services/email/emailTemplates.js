@@ -32,7 +32,7 @@ export function getGuardianVerificationTemplate({ guardianName, userName, verifi
       </head>
       <body>
         <div class="card">
-          <div class="logo">💜 YouMatter</div>
+          <div class="logo">YouMatter</div>
           <h1 class="h1">Verify Your Email Address</h1>
           <p class="p">Hello ${cleanGuardian},</p>
           <p class="p"><strong>${cleanUser}</strong> has listed you as their designated Trusted Contact / Guardian on the <strong>YouMatter</strong> wellness platform.</p>
@@ -93,8 +93,8 @@ export function getHighRiskAlertTemplate({ guardianName, userName, timestamp }) 
           <div class="box" style="background-color: #f8fafc; border-left-color: #8b5cf6;">
             <div class="box-title" style="color: #6d28d9;">Immediate Emergency Helplines (India)</div>
             <div style="font-size: 13px; color: #334155; line-height: 1.6;">
-              📞 <strong>Tele-MANAS:</strong> 14416 or 1800 891 4416 (24/7 Toll-Free)<br>
-              📞 <strong>KIRAN Mental Health Helpline:</strong> 1800-599-0019 (24/7)
+              <strong>Tele-MANAS:</strong> 14416 or 1800 891 4416 (24/7 Toll-Free)<br>
+              <strong>KIRAN Mental Health Helpline:</strong> 1800-599-0019 (24/7)
             </div>
           </div>
 

@@ -19,8 +19,10 @@ type Mood = (typeof MOODS)[number];
 
 interface JournalEntry {
   id: number;
+  title?: string;
   content: string;
   created_at: string;
+  mood?: string;
   mood_id?: string;
 }
 
@@ -47,14 +49,15 @@ function Journal() {
     if (!title.trim() || !content.trim()) return;
     try {
       await api.post("/diary", {
-        content: title + "\n\n" + content,
-        mood_id: activeMood.id,
+        title: title.trim(),
+        content: content.trim(),
+        mood: activeMood.id,
       });
       fetchJournals();
       setTitle("");
       setContent("");
     } catch (err) {
-      console.log(err);
+      console.log("Failed to save journal:", err);
     }
   };
 
@@ -196,8 +199,10 @@ function Journal() {
           ) : (
             <div className="mt-6 grid gap-5 lg:grid-cols-2">
               {journals.map((journal) => {
-                const entryMood = MOODS.find((x) => x.id === journal.mood_id) ?? MOODS[5];
+                const entryMood = MOODS.find((x) => x.id === (journal.mood || journal.mood_id)) ?? MOODS[5];
                 const { Icon: EntryIcon } = entryMood;
+                const displayTitle = journal.title || journal.content?.split("\n\n")[0] || "Untitled Reflection";
+                const displayContent = journal.title ? journal.content : (journal.content?.split("\n\n").slice(1).join("\n\n") || journal.content);
                 return (
                   <div
                     key={journal.id}
@@ -219,7 +224,7 @@ function Journal() {
                           })}
                         </p>
                         <h3 className="mt-1 text-[20px] font-black" style={{ color: theme.text }}>
-                          {journal.content?.split("\n\n")[0]}
+                          {displayTitle}
                         </h3>
                       </div>
 
@@ -244,7 +249,7 @@ function Journal() {
 
                     {/* CONTENT */}
                     <p className="mt-4 text-[14px] leading-7 font-medium" style={{ color: theme.subtext }}>
-                      {journal.content?.split("\n\n").slice(1).join("\n\n") || journal.content}
+                      {displayContent}
                     </p>
                   </div>
                 );

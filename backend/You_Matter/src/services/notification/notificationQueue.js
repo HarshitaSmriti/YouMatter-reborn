@@ -22,7 +22,7 @@ class NotificationQueueWorker {
       try {
         await this.executeJob(job);
       } catch (err) {
-        console.error('❌ Notification Worker Error:', err);
+        console.error('Notification Worker Error:', err);
       }
     }
 
@@ -31,7 +31,7 @@ class NotificationQueueWorker {
 
   async executeJob(job) {
     const { notificationId, userId, contact, notificationType, userName, verificationUrl } = job;
-    console.log(`🚀 Executing Notification Job [${notificationId}] for ${contact.email}`);
+    console.log(`Executing Notification Job [${notificationId}] for ${contact.email}`);
 
     // Update status to PROCESSING
     await supabase
@@ -70,7 +70,7 @@ class NotificationQueueWorker {
         })
         .eq('id', notificationId);
 
-      console.log(`✅ Notification [${notificationId}] delivered via SMTP.`);
+      console.log(`Notification [${notificationId}] delivered via SMTP.`);
     } else {
       await supabase
         .from('notifications')
@@ -80,7 +80,7 @@ class NotificationQueueWorker {
         })
         .eq('id', notificationId);
 
-      console.error(`❌ Notification [${notificationId}] failed: ${result.error}`);
+      console.error(`Notification [${notificationId}] failed: ${result.error}`);
     }
   }
 }

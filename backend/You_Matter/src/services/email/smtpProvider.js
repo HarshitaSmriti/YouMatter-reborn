@@ -14,7 +14,7 @@ class SMTPProvider {
       const pass = process.env.SMTP_PASSWORD;
 
       if (!user || !pass) {
-        console.warn('⚠️ SMTP warning: SMTP_USER or SMTP_PASSWORD not configured. Emails will run in mock mode.');
+        console.warn('SMTP warning: SMTP_USER or SMTP_PASSWORD not configured. Emails will run in mock mode.');
       }
 
       this.transporter = nodemailer.createTransport({
@@ -64,7 +64,7 @@ class SMTPProvider {
         messageId: info.messageId,
       };
     } catch (err) {
-      console.error('❌ SMTP Delivery Error:', err.message);
+      console.error('SMTP Delivery Error:', err.message);
       return {
         success: false,
         error: err.message,

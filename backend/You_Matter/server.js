@@ -10,7 +10,7 @@ const server = http.createServer(app);
 const wss = new WebSocketServer({ server, path: "/ws/chat" });
 
 wss.on("connection", (ws) => {
-  console.log("⚡ WebSocket client connected to AI Chat");
+  console.log("WebSocket client connected to AI Chat");
 
   ws.on("message", async (rawMessage) => {
     try {
@@ -21,7 +21,7 @@ wss.on("connection", (ws) => {
 
       const crisisDetection = detectCrisis(message);
       if (crisisDetection.isCrisis) {
-        console.log("🚨 CRISIS DETECTED OVER WEBSOCKET! Message:", message);
+        console.log("CRISIS DETECTED OVER WEBSOCKET! Message:", message);
         const guardianEmail = process.env.DEFAULT_GUARDIAN_EMAIL || process.env.SMTP_USER;
         if (guardianEmail) {
           sendCrisisEmail(guardianEmail, "YouMatter User", message).catch((e) =>
@@ -77,11 +77,11 @@ wss.on("connection", (ws) => {
 
 // Global Safety Process Handlers to Prevent Uncaught Process Crashes
 process.on("uncaughtException", (err) => {
-  console.error("🔥 CRITICAL UNCAUGHT EXCEPTION:", err.stack || err.message || err);
+  console.error("CRITICAL UNCAUGHT EXCEPTION:", err.stack || err.message || err);
 });
 
 process.on("unhandledRejection", (reason, promise) => {
-  console.error("🔥 CRITICAL UNHANDLED REJECTION at:", promise, "reason:", reason);
+  console.error("CRITICAL UNHANDLED REJECTION at:", promise, "reason:", reason);
 });
 
 server.listen(PORT, "0.0.0.0", () => {

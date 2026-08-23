@@ -29,10 +29,10 @@ const getUserClient = (req) => {
 
 //  NEW: normalize mood (CRITICAL FIX)
 const normalizeMood = (mood) => {
-  if (!mood) return undefined;
+  if (!mood) return "neutral";
   const valid = ["happy", "sad", "angry", "anxious", "neutral"];
   const m = mood.toLowerCase().trim();
-  return valid.includes(m) ? m : undefined;
+  return valid.includes(m) ? m : "neutral";
 };
 
 const crisisEmailEnabled = process.env.ENABLE_CRISIS_EMAIL === "true";
@@ -255,7 +255,7 @@ const legacySaveMessage = async (req, res, next) => {
       aiResponse.data?.response ||
       aiResponse.data?.output ||
       aiResponse.data?.text ||
-      "I'm here with you 💜";
+      "I'm here with you.";
 
     const { error: insertError } = await supabaseUser
       .from("conversations")
@@ -425,7 +425,7 @@ export const saveMessage = async (req, res, next) => {
       aiResult.reply = crisisFallbackReply;
 
       const targetGuardianEmail = getGuardianEmail(userData, req.body);
-      console.log("🚨 CRISIS DETECTED! Triggering SMTP Alert to Guardian:", targetGuardianEmail);
+      console.log("CRISIS DETECTED! Triggering SMTP Alert to Guardian:", targetGuardianEmail);
 
       Promise.resolve().then(async () => {
         try {
@@ -435,7 +435,7 @@ export const saveMessage = async (req, res, next) => {
               userData?.name || req.user?.email || "YouMatter User",
               message
             );
-            console.log("✅ Crisis SMTP email dispatched successfully.");
+            console.log("Crisis SMTP email dispatched successfully.");
           }
 
           if (!req.isDemoUser) {
@@ -522,8 +522,22 @@ export const clearConversation = async (req, res, next) => {
 export const addMood = async (req, res, next) => {
   try {
     const { mood_score, mood_label, note } = moodSchema.parse(req.body);
-    const user_id = req.user.id;
 
+    if (req.isDemoUser) {
+      return res.json({
+        message: "Mood logged (demo)",
+        data: [{
+          id: Date.now(),
+          user_id: req.user.id,
+          mood_score,
+          mood_label,
+          note,
+          created_at: new Date().toISOString(),
+        }]
+      });
+    }
+
+    const user_id = req.user.id;
     const supabaseUser = getUserClient(req);
 
     const { data, error } = await supabaseUser
@@ -540,11 +554,13 @@ export const addMood = async (req, res, next) => {
   }
 };
 
-
-
 // ================= GET MOOD =================
 export const getMood = async (req, res, next) => {
   try {
+    if (req.isDemoUser) {
+      return res.json({ message: "Mood history (demo)", data: [] });
+    }
+
     const user_id = req.user.id;
     const supabaseUser = getUserClient(req);
 
@@ -563,8 +579,6 @@ export const getMood = async (req, res, next) => {
   }
 };
 
-
-
 // ================= ADD DIARY =================
 export const addDiary = async (req, res, next) => {
   try {
@@ -572,6 +586,20 @@ export const addDiary = async (req, res, next) => {
 
     if (!req.user || !req.user.id) {
       return res.status(401).json({ message: "Unauthorized" });
+    }
+
+    if (req.isDemoUser) {
+      return res.status(200).json({
+        message: "Diary saved (demo)",
+        data: [{
+          id: Date.now(),
+          user_id: req.user.id,
+          title,
+          content,
+          mood: normalizeMood(mood),
+          created_at: new Date().toISOString(),
+        }],
+      });
     }
 
     const user_id = req.user.id;
@@ -584,7 +612,7 @@ export const addDiary = async (req, res, next) => {
           user_id,
           title,
           content,
-          mood: normalizeMood(mood), // FIX
+          mood: normalizeMood(mood),
         },
       ])
       .select();
@@ -607,11 +635,13 @@ export const addDiary = async (req, res, next) => {
   }
 };
 
-
-
 // ================= GET DIARY =================
 export const getDiary = async (req, res, next) => {
   try {
+    if (req.isDemoUser) {
+      return res.json({ message: "Diary entries (demo)", data: [] });
+    }
+
     const user_id = req.user.id;
     const supabaseUser = getUserClient(req);
 
@@ -630,11 +660,13 @@ export const getDiary = async (req, res, next) => {
   }
 };
 
-
-
 // ================= DELETE DIARY =================
 export const deleteDiary = async (req, res, next) => {
   try {
+    if (req.isDemoUser) {
+      return res.json({ message: "Diary deleted (demo)" });
+    }
+
     const user_id = req.user.id;
     const { id } = req.params;
 
@@ -655,11 +687,13 @@ export const deleteDiary = async (req, res, next) => {
   }
 };
 
-
-
 // ================= UPDATE DIARY =================
 export const updateDiary = async (req, res, next) => {
   try {
+    if (req.isDemoUser) {
+      return res.json({ message: "Diary updated (demo)", data: [] });
+    }
+
     const user_id = req.user.id;
     const { id } = req.params;
     const { title, content, mood } = req.body;
@@ -671,7 +705,7 @@ export const updateDiary = async (req, res, next) => {
       .update({
         title,
         content,
-        mood: normalizeMood(mood), // FIX
+        mood: normalizeMood(mood),
       })
       .eq('id', id)
       .eq('user_id', user_id)

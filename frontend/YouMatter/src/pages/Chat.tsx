@@ -133,7 +133,7 @@ export default function Chat() {
     wsRef.current = ws;
 
     ws.onopen = () => {
-      console.log("⚡ Real-time WebSocket AI connected");
+      console.log("Real-time WebSocket AI connected");
     };
 
     ws.onmessage = (event) => {
