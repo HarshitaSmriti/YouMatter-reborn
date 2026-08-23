@@ -35,11 +35,23 @@ function Journal() {
   const [activeMood, setActiveMood] = useState<Mood>(MOODS[5]);
   const [showPopup, setShowPopup] = useState(false);
   const [popupMessage, setPopupMessage] = useState("");
+  const [entryToDelete, setEntryToDelete] = useState<number | string | null>(null);
+
+  const [deletedIds, setDeletedIds] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem("youmatter_deleted_journal_ids");
+      return saved ? JSON.parse(saved) : [];
+    } catch {
+      return [];
+    }
+  });
 
   const fetchJournals = async () => {
     try {
       const res = await api.get("/diary");
-      setJournals(res.data.data || []);
+      const fetched: JournalEntry[] = res.data.data || [];
+      const filtered = fetched.filter((j) => !deletedIds.includes(String(j.id)));
+      setJournals(filtered);
     } catch (err) {
       console.log(err);
     }
@@ -77,16 +89,32 @@ function Journal() {
     }
   };
 
-  const deleteJournal = async (id: number | string) => {
-    setJournals((prev) => prev.filter((j) => String(j.id) !== String(id)));
+  const confirmDeleteJournal = (id: number | string) => {
+    setEntryToDelete(id);
+  };
+
+  const executeDeleteJournal = async () => {
+    if (entryToDelete === null) return;
+    const targetIdStr = String(entryToDelete);
+
+    const updatedDeleted = [...deletedIds, targetIdStr];
+    setDeletedIds(updatedDeleted);
     try {
-      await api.delete(`/diary/${id}`);
+      localStorage.setItem("youmatter_deleted_journal_ids", JSON.stringify(updatedDeleted));
+    } catch (e) {}
+
+    setJournals((prev) => prev.filter((j) => String(j.id) !== targetIdStr));
+    setEntryToDelete(null);
+
+    try {
+      await api.delete(`/diary/${targetIdStr}`);
       const res = await api.get("/diary");
       if (res.data && Array.isArray(res.data.data)) {
-        setJournals(res.data.data);
+        const fresh = res.data.data.filter((j: any) => !updatedDeleted.includes(String(j.id)));
+        setJournals(fresh);
       }
     } catch (err) {
-      console.error("Failed to delete journal entry:", err);
+      console.error("Failed to delete journal entry on backend:", err);
     }
   };
 
@@ -256,8 +284,8 @@ function Journal() {
                           {entryMood.label}
                         </span>
                         <button
-                          onClick={() => deleteJournal(journal.id)}
-                          className="flex h-8 w-8 items-center justify-center rounded-xl transition hover:bg-rose-100/50"
+                          onClick={() => confirmDeleteJournal(journal.id)}
+                          className="flex h-8 w-8 items-center justify-center rounded-xl transition hover:bg-rose-100/50 active:scale-95"
                           style={{ color: "#f43f5e" }}
                           title="Delete entry"
                         >
@@ -277,6 +305,43 @@ function Journal() {
           )}
         </div>
       </main>
+
+      {/* DELETE CONFIRMATION MODAL */}
+      {entryToDelete !== null && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div
+            className="w-full max-w-sm rounded-[28px] p-6 shadow-2xl border text-center transition-all duration-300 transform scale-100"
+            style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
+          >
+            <div
+              className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-rose-100 text-rose-600"
+            >
+              <Trash2 size={24} />
+            </div>
+            <h3 className="text-xl font-black" style={{ color: theme.text }}>
+              Delete Journal Entry?
+            </h3>
+            <p className="mt-2 text-sm font-semibold leading-relaxed" style={{ color: theme.subtext }}>
+              Are you sure you want to delete this journal entry? This action cannot be undone.
+            </p>
+            <div className="mt-6 flex items-center gap-3">
+              <button
+                onClick={() => setEntryToDelete(null)}
+                className="flex-1 rounded-2xl py-3 text-sm font-bold border transition hover:opacity-80 active:scale-95 shadow-xs"
+                style={{ backgroundColor: theme.soft, borderColor: theme.border, color: theme.text }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={executeDeleteJournal}
+                className="flex-1 rounded-2xl py-3 text-sm font-bold text-white bg-rose-600 transition hover:bg-rose-700 active:scale-95 shadow-xs"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* POPUP MODAL */}
       {showPopup && (
