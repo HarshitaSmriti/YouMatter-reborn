@@ -474,20 +474,20 @@ function Home() {
       {/* SIDEBAR */}
       <Sidebar />
 
-      <main className="relative flex-1 overflow-x-hidden px-3.5 py-4 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-[1400px] space-y-6 sm:space-y-8">
+      <main className="relative flex-1 overflow-x-hidden px-3 py-3 sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-[1400px] space-y-4 sm:space-y-6">
 
           {/* ── TOP BAR ── */}
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <p
-                className="text-[11px] sm:text-xs font-bold uppercase tracking-widest transition-colors duration-500"
+                className="text-[10px] sm:text-xs font-bold uppercase tracking-widest transition-colors duration-500"
                 style={{ color: theme.accent }}
               >
                 {greeting}
               </p>
               <h1
-                className="mt-1 text-2xl font-black leading-tight sm:text-4xl lg:text-5xl transition-colors duration-500 tracking-tight"
+                className="mt-0.5 text-xl font-extrabold leading-tight sm:text-3xl lg:text-4xl transition-colors duration-500 tracking-tight"
                 style={{ color: theme.text }}
               >
                 Welcome back,{" "}
@@ -499,7 +499,7 @@ function Home() {
                 </span>
               </h1>
               <p
-                className="mt-1.5 max-w-lg text-xs leading-5 sm:text-base sm:leading-7 transition-colors duration-500 font-medium"
+                className="mt-1 max-w-lg text-xs sm:text-sm font-medium leading-relaxed transition-colors duration-500"
                 style={{ color: theme.subtext }}
               >
                 Your feelings matter. Take a gentle pause and check in with yourself today.
@@ -532,11 +532,11 @@ function Home() {
           </div>
 
           {/* ── HERO SECTION: AI CHAT + MOOD PANEL ── */}
-          <div className="grid gap-4 sm:gap-5 lg:grid-cols-[1fr_360px]">
+          <div className="grid gap-3.5 sm:gap-5 lg:grid-cols-[1fr_360px]">
 
             {/* AI CHAT HERO */}
             <div
-              className="relative overflow-hidden rounded-[24px] sm:rounded-[32px] p-5 sm:p-8 lg:p-10 transition-all duration-500 border shadow-xs"
+              className="relative overflow-hidden rounded-2xl sm:rounded-3xl p-4 sm:p-7 lg:p-9 transition-all duration-500 border shadow-xs"
               style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
             >
               <div
@@ -544,33 +544,33 @@ function Home() {
                 style={{ background: theme.accent }}
               />
               <div className="relative z-10">
-                <div className="flex items-center gap-2.5 mb-3 sm:mb-4">
+                <div className="flex items-center gap-2 mb-2 sm:mb-3">
                   <div
-                    className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl sm:rounded-2xl"
+                    className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl"
                     style={{ background: theme.accent + "22" }}
                   >
-                    <Sparkles size={20} style={{ color: theme.accent }} />
+                    <Sparkles size={17} style={{ color: theme.accent }} />
                   </div>
                   <div>
                     <p
-                      className="text-[11px] sm:text-xs font-bold uppercase tracking-widest"
+                      className="text-[10px] sm:text-xs font-bold uppercase tracking-widest"
                       style={{ color: theme.accent }}
                     >
                       AI Companion
                     </p>
-                    <p className="text-[11px] sm:text-xs font-medium" style={{ color: theme.subtext }}>Always here for you</p>
+                    <p className="text-[10px] sm:text-xs font-medium" style={{ color: theme.subtext }}>Always here for you</p>
                   </div>
                 </div>
 
                 <h2
-                  className="text-2xl font-black leading-tight sm:text-4xl lg:text-5xl transition-colors duration-500 tracking-tight"
+                  className="text-xl font-extrabold leading-tight sm:text-3xl lg:text-4xl transition-colors duration-500 tracking-tight"
                   style={{ color: theme.text }}
                 >
-                  Need someone<br />to talk to?
+                  Need someone to talk to?
                 </h2>
 
                 <p
-                  className="mt-3 max-w-lg text-xs leading-5 sm:text-base sm:leading-7 font-medium transition-colors duration-500"
+                  className="mt-2 max-w-lg text-xs sm:text-sm font-medium leading-relaxed transition-colors duration-500"
                   style={{ color: theme.subtext }}
                 >
                   Your safe place to vent, reflect, breathe and feel heard — without judgment, without limits.
@@ -578,56 +578,56 @@ function Home() {
 
                 {/* Quote */}
                 <div
-                  className="mt-4 sm:mt-6 rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 sm:py-4 text-xs sm:text-sm font-medium leading-5 sm:leading-6 italic transition-all duration-700"
+                  className="mt-3 sm:mt-5 rounded-xl px-3.5 py-2.5 sm:px-4 sm:py-3.5 text-xs sm:text-sm font-medium leading-snug italic transition-all duration-700"
                   style={{
                     background: theme.soft,
                     color: theme.text,
-                    borderLeft: `4px solid ${theme.accent}`,
+                    borderLeft: `3.5px solid ${theme.accent}`,
                   }}
                 >
                   {theme.quote}
                 </div>
 
-                <div className="mt-5 sm:mt-8 flex flex-wrap gap-2.5 sm:gap-3">
+                <div className="mt-4 sm:mt-6 flex flex-wrap gap-2 sm:gap-3">
                   <button
                     onClick={() => navigate("/chat")}
-                    className="flex items-center gap-2 rounded-xl sm:rounded-2xl px-5 py-3 sm:px-7 sm:py-4 text-xs sm:text-sm font-black text-white shadow-lg transition-all hover:-translate-y-0.5 hover:shadow-xl active:scale-[0.97]"
+                    className="flex items-center gap-1.5 rounded-xl px-4 py-2.5 sm:px-6 sm:py-3.5 text-xs sm:text-sm font-bold text-white shadow-md transition-all hover:-translate-y-0.5 active:scale-[0.97]"
                     style={{ background: theme.accent }}
                   >
-                    Open AI Chat <ArrowRight size={15} />
+                    Open AI Chat <ArrowRight size={14} />
                   </button>
                   <button
                     onClick={() => navigate("/breathing")}
-                    className="flex items-center gap-2 rounded-xl sm:rounded-2xl border px-4 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-bold transition-all hover:-translate-y-0.5 active:scale-[0.97]"
+                    className="flex items-center gap-1.5 rounded-xl border px-3.5 py-2.5 sm:px-5 sm:py-3.5 text-xs sm:text-sm font-bold transition-all hover:-translate-y-0.5 active:scale-[0.97]"
                     style={{
                       borderColor: theme.border,
                       color: theme.text,
                       backgroundColor: theme.soft,
                     }}
                   >
-                    <Wind size={15} /> Breathe first
+                    <Wind size={14} /> Breathe first
                   </button>
                 </div>
               </div>
             </div>
 
             {/* RIGHT PANEL: Mood + Graph */}
-            <div className="flex flex-col gap-5">
+            <div className="flex flex-col gap-3.5 sm:gap-5">
               {/* MOOD PICKER */}
               <div
-                className="rounded-[28px] p-5 shadow-xs border transition-colors duration-500"
+                className="rounded-2xl sm:rounded-3xl p-4 sm:p-5 shadow-xs border transition-colors duration-500"
                 style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
               >
                 <p
-                  className="text-xs font-bold uppercase tracking-widest transition-colors duration-700"
+                  className="text-[10px] sm:text-xs font-bold uppercase tracking-widest transition-colors duration-700"
                   style={{ color: theme.accent }}
                 >
                   Daily check-in
                 </p>
-                <h2 className="mt-1 text-2xl font-black" style={{ color: theme.text }}>
+                <h2 className="mt-0.5 text-lg sm:text-xl font-bold" style={{ color: theme.text }}>
                   How are you feeling?
                 </h2>
-                <div className="mt-4">
+                <div className="mt-3">
                   <MoodSectionWrapper onMoodChange={handleMoodChange} currentMood={activeMood} />
                 </div>
               </div>

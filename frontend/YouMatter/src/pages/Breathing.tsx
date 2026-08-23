@@ -103,44 +103,44 @@ function Breathing() {
     >
       <Sidebar />
 
-      <main className="flex-1 px-3.5 py-4 sm:px-8">
+      <main className="flex-1 px-3 py-3 sm:px-6 lg:px-8">
         {/* HEADER */}
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-2.5 sm:gap-4">
           <button
             onClick={() => navigate("/home")}
-            className="flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center rounded-xl sm:rounded-2xl border shadow-xs transition hover:opacity-80 active:scale-95"
+            className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl border shadow-xs transition hover:opacity-80 active:scale-95"
             style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
           >
             <ArrowLeft
-              size={16}
+              size={14}
               style={{ color: theme.accent }}
             />
           </button>
 
           <div>
-            <p className="text-[11px] sm:text-xs font-bold uppercase tracking-widest" style={{ color: theme.accent }}>
+            <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest" style={{ color: theme.accent }}>
               Calm Activities
             </p>
 
-            <h1 className="mt-0.5 text-2xl font-black sm:text-4xl lg:text-5xl tracking-tight" style={{ color: theme.text }}>
+            <h1 className="mt-0.5 text-xl font-extrabold sm:text-3xl lg:text-4xl tracking-tight" style={{ color: theme.text }}>
               Breathing Exercises
             </h1>
           </div>
         </div>
 
-        <p className="mt-2 sm:mt-5 max-w-[700px] text-xs leading-5 sm:text-[16px] sm:leading-8 font-medium" style={{ color: theme.subtext }}>
+        <p className="mt-1.5 sm:mt-4 max-w-[700px] text-xs sm:text-sm font-medium leading-relaxed" style={{ color: theme.subtext }}>
           Slow down your thoughts, relax your body and calm your breathing with gentle interactive exercises.
         </p>
 
         {/* GRID */}
-        <div className="mt-5 sm:mt-10 grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
+        <div className="mt-4 sm:mt-8 grid gap-2.5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
           {exercises.map((exercise, index) => {
             const isSelected = activeExercise === index;
             return (
               <button
                 key={index}
                 onClick={() => setActiveExercise(index)}
-                className="rounded-[20px] sm:rounded-[28px] border-2 p-3.5 sm:p-5 text-left transition-all duration-300 shadow-xs"
+                className="rounded-xl sm:rounded-2xl border-2 p-3 sm:p-4 text-left transition-all duration-300 shadow-xs"
                 style={{
                   backgroundColor: isSelected ? theme.soft : theme.cardBg,
                   borderColor: isSelected ? theme.accent : theme.border,
@@ -148,17 +148,17 @@ function Breathing() {
                 }}
               >
                 <div
-                  className="flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-xl sm:rounded-2xl"
+                  className="flex h-8 w-8 sm:h-11 sm:w-11 items-center justify-center rounded-lg sm:rounded-xl"
                   style={{ backgroundColor: exercise.accent + "22" }}
                 >
                   {exercise.icon}
                 </div>
 
-                <h3 className="mt-3 sm:mt-5 text-sm sm:text-[22px] font-black" style={{ color: theme.text }}>
+                <h3 className="mt-2 sm:mt-4 text-xs sm:text-base font-bold" style={{ color: theme.text }}>
                   {exercise.title}
                 </h3>
 
-                <p className="mt-1 sm:mt-2 text-[11px] sm:text-sm leading-4 sm:leading-7 font-medium" style={{ color: theme.subtext }}>
+                <p className="mt-0.5 sm:mt-1 text-[10px] sm:text-xs leading-tight font-medium" style={{ color: theme.subtext }}>
                   {exercise.description}
                 </p>
               </button>
@@ -168,23 +168,23 @@ function Breathing() {
 
         {/* ACTIVE */}
         <div
-          className="mt-6 sm:mt-10 rounded-[24px] sm:rounded-[36px] p-4 sm:p-8 shadow-xs border transition-colors duration-500"
+          className="mt-4 sm:mt-8 rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 shadow-xs border transition-colors duration-500"
           style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
         >
-          <div className="flex items-center gap-3 sm:gap-4">
+          <div className="flex items-center gap-2.5 sm:gap-3.5">
             <div
-              className="flex h-11 w-11 sm:h-16 sm:w-16 items-center justify-center rounded-xl sm:rounded-2xl shrink-0"
+              className="flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-xl shrink-0"
               style={{ backgroundColor: exercises[activeExercise].accent + "22" }}
             >
               {exercises[activeExercise].icon}
             </div>
 
             <div>
-              <h2 className="text-xl sm:text-[34px] font-black" style={{ color: theme.text }}>
+              <h2 className="text-base sm:text-2xl font-bold" style={{ color: theme.text }}>
                 {exercises[activeExercise].title}
               </h2>
 
-              <p className="mt-1 sm:mt-2 text-xs sm:text-[15px] leading-5 sm:leading-7 font-medium" style={{ color: theme.subtext }}>
+              <p className="mt-0.5 text-xs sm:text-sm font-medium leading-relaxed" style={{ color: theme.subtext }}>
                 {exercises[activeExercise].description}
               </p>
             </div>

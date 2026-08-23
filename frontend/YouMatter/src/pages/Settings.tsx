@@ -37,27 +37,27 @@ function Settings() {
     >
       <Sidebar />
 
-      <main className="flex-1 px-3.5 py-4 sm:px-8">
+      <main className="flex-1 px-3 py-3 sm:px-6 lg:px-8">
         {/* HEADER */}
-        <div className="flex items-center gap-3 sm:gap-4">
+        <div className="flex items-center gap-2.5 sm:gap-4">
           <button
             onClick={() => navigate("/home")}
-            className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl border shadow-xs transition hover:opacity-80 active:scale-95"
+            className="flex h-8 w-8 sm:h-10 sm:w-10 items-center justify-center rounded-xl border shadow-xs transition hover:opacity-80 active:scale-95"
             style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
           >
             <ArrowLeft
-              size={16}
+              size={14}
               style={{ color: theme.accent }}
             />
           </button>
 
           <div>
-            <p className="text-[11px] sm:text-xs font-bold uppercase tracking-widest" style={{ color: theme.accent }}>
+            <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest" style={{ color: theme.accent }}>
               Preferences & Privacy
             </p>
 
             <h1
-              className="mt-0.5 text-2xl font-black sm:text-4xl lg:text-5xl transition-colors duration-500 tracking-tight"
+              className="mt-0.5 text-xl font-extrabold sm:text-3xl lg:text-4xl transition-colors duration-500 tracking-tight"
               style={{ color: theme.text }}
             >
               Settings
@@ -67,12 +67,12 @@ function Settings() {
 
         {/* PROFILE */}
         <div
-          className="mt-5 sm:mt-8 rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 border shadow-xs transition-all duration-500"
+          className="mt-4 sm:mt-6 rounded-2xl sm:rounded-3xl p-3.5 sm:p-6 border shadow-xs transition-all duration-500"
           style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
         >
-          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
+          <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
             <div
-              className="flex h-16 w-16 sm:h-24 sm:w-24 items-center justify-center rounded-full font-black text-xl sm:text-3xl text-white shadow-md transition-colors duration-500"
+              className="flex h-12 w-12 sm:h-16 sm:w-16 items-center justify-center rounded-full font-bold text-lg sm:text-2xl text-white shadow-md transition-colors duration-500 shrink-0"
               style={{ backgroundColor: theme.accent }}
             >
               {userName.charAt(0).toUpperCase()}
@@ -80,7 +80,7 @@ function Settings() {
 
             <div>
               <h2
-                className="text-xl font-black sm:text-[40px] tracking-tight transition-colors duration-500"
+                className="text-lg font-bold sm:text-2xl tracking-tight transition-colors duration-500"
                 style={{ color: theme.text }}
               >
                 {userName}
@@ -90,9 +90,9 @@ function Settings() {
                 Your safe mental wellness journey
               </p>
 
-              <div className="mt-4 flex flex-wrap gap-3">
+              <div className="mt-3 flex flex-wrap gap-2">
                 <button
-                  className="rounded-2xl px-5 py-3 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95"
+                  className="rounded-xl px-4 py-2 text-xs font-bold text-white shadow-xs transition hover:opacity-90 active:scale-95"
                   style={{ backgroundColor: theme.accent }}
                 >
                   Edit Profile
