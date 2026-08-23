@@ -7,8 +7,14 @@ import geminiProvider from "./providers/geminiProvider.js";
 
 const app = express();
 
-// Lightweight Keep-Alive Endpoint — Placed at the absolute top of Express stack
-// Responds immediately with HTTP 200 OK (2 bytes) before any middleware, CORS, or AI calls.
+// Dedicated Zero-Body Cron Endpoint — Placed at the absolute top of Express stack
+// Responds immediately with HTTP 204 No Content (0 bytes body) to guarantee Cloudflare/Render/proxy layers
+// do not inject HTML scripts, bot-challenge wrappers, or chunked transfer overhead.
+app.get("/cron-health", (req, res) => {
+  res.status(204).end();
+});
+
+// Existing Lightweight Keep-Alive Endpoint
 app.get("/health", (req, res) => {
   console.log("[HEALTH] OK");
   res.setHeader("Content-Type", "text/plain");
