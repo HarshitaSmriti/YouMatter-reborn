@@ -3,8 +3,6 @@ import cors from 'cors';
 import morgan from "morgan";
 import supabase from "./config/supabaseClient.js";
 
-import providerManager from "./services/ai/ProviderManager.js";
-
 import userRoutes from './routes/userRoutes.js';
 import guardianRoutes from './routes/guardianRoutes.js';
 import aiRoutes from './routes/aiRoutes.js';
@@ -15,15 +13,10 @@ const app = express();
 app.set("trust proxy", 1);
 
 // Dedicated Zero-Body Cron Endpoint — Placed at the absolute top of Express stack
-// Executes required health & keep-alive checks (database & AI service) asynchronously while responding immediately with HTTP 204 No Content (0 bytes body).
-app.all(['/cron-health', '/cron'], (req, res) => {
-  Promise.allSettled([
-    supabase.from('users').select('id').limit(1),
-    providerManager.getHealthStatus()
-  ]).catch(err => {
-    console.error('[CRON] Keep-alive task error:', err.message);
-  });
-
+// Handles GET, HEAD, OPTIONS requests immediately with HTTP 204 No Content (Content-Length: 0)
+// guaranteeing zero response body and bypassing all middleware, CORS preflights, and DB calls.
+app.all('/cron-health', (req, res) => {
+  res.setHeader("Content-Length", "0");
   res.status(204).end();
 });
 

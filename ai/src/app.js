@@ -8,9 +8,10 @@ import geminiProvider from "./providers/geminiProvider.js";
 const app = express();
 
 // Dedicated Zero-Body Cron Endpoint — Placed at the absolute top of Express stack
-// Responds immediately with HTTP 204 No Content (0 bytes body) to guarantee Cloudflare/Render/proxy layers
-// do not inject HTML scripts, bot-challenge wrappers, or chunked transfer overhead.
-app.get("/cron-health", (req, res) => {
+// Handles GET, HEAD, OPTIONS requests immediately with HTTP 204 No Content (Content-Length: 0)
+// guaranteeing zero response body and bypassing all middleware, CORS preflights, and AI processing.
+app.all("/cron-health", (req, res) => {
+  res.setHeader("Content-Length", "0");
   res.status(204).end();
 });
 
