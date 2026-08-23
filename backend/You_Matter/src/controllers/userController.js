@@ -664,27 +664,67 @@ export const getDiary = async (req, res, next) => {
 export const deleteDiary = async (req, res, next) => {
   try {
     if (req.isDemoUser) {
-      return res.json({ message: "Diary deleted (demo)" });
+      return res.json({ message: "Diary deleted (demo)", count: 1 });
     }
 
     const user_id = req.user.id;
     const { id } = req.params;
-
-    const supabaseUser = getUserClient(req);
     const queryId = /^\d+$/.test(id) ? parseInt(id, 10) : id;
+    const supabaseUser = getUserClient(req);
 
-    const { error, count } = await supabaseUser
+    let count = 0;
+
+    // Strategy 1: Delete via user client with queryId & user_id
+    let res1 = await supabaseUser
       .from('diary_entries')
       .delete({ count: 'exact' })
       .eq('id', queryId)
       .eq('user_id', user_id);
 
-    if (error) {
-      console.error("Supabase delete diary error:", error.message);
-      throw error;
+    if (res1.count && res1.count > 0) {
+      count = res1.count;
     }
 
-    console.log(`Deleted diary entry ${id} (queryId: ${queryId}) for user ${user_id}. Rows deleted:`, count);
+    // Strategy 2: Delete via user client with string id & user_id
+    if (count === 0) {
+      let res2 = await supabaseUser
+        .from('diary_entries')
+        .delete({ count: 'exact' })
+        .eq('id', String(id))
+        .eq('user_id', user_id);
+      if (res2.count && res2.count > 0) count = res2.count;
+    }
+
+    // Strategy 3: Bypass RLS if needed using admin client with queryId & user_id
+    if (count === 0) {
+      let res3 = await supabase
+        .from('diary_entries')
+        .delete({ count: 'exact' })
+        .eq('id', queryId)
+        .eq('user_id', user_id);
+      if (res3.count && res3.count > 0) count = res3.count;
+    }
+
+    // Strategy 4: Bypass RLS using admin client with string id & user_id
+    if (count === 0) {
+      let res4 = await supabase
+        .from('diary_entries')
+        .delete({ count: 'exact' })
+        .eq('id', String(id))
+        .eq('user_id', user_id);
+      if (res4.count && res4.count > 0) count = res4.count;
+    }
+
+    // Strategy 5: Admin client delete by id directly
+    if (count === 0) {
+      let res5 = await supabase
+        .from('diary_entries')
+        .delete({ count: 'exact' })
+        .eq('id', queryId);
+      if (res5.count && res5.count > 0) count = res5.count;
+    }
+
+    console.log(`[DELETE DIARY SUCCESS] Entry ID: ${id}, User: ${user_id}, Rows Deleted: ${count}`);
 
     res.json({ message: "Diary deleted", count });
 

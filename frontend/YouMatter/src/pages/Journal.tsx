@@ -87,7 +87,6 @@ function Journal() {
       }
     } catch (err) {
       console.error("Failed to delete journal entry:", err);
-      fetchJournals();
     }
   };
 
