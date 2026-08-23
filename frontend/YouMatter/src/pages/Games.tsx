@@ -535,26 +535,26 @@ function Games() {
     >
       <Sidebar />
 
-      <main className="flex-1 px-4 py-6 sm:px-8">
+      <main className="flex-1 px-3.5 py-4 sm:px-8">
         {/* HEADER */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <button
             onClick={() => navigate("/home")}
-            className="flex h-12 w-12 items-center justify-center rounded-2xl border shadow-xs transition hover:opacity-80 active:scale-95"
+            className="flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center rounded-xl sm:rounded-2xl border shadow-xs transition hover:opacity-80 active:scale-95"
             style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
           >
             <ArrowLeft
-              size={20}
+              size={16}
               style={{ color: theme.accent }}
             />
           </button>
 
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest" style={{ color: theme.accent }}>
+            <p className="text-[11px] sm:text-xs font-bold uppercase tracking-widest" style={{ color: theme.accent }}>
               Interactive Calm Games
             </p>
 
-            <h1 className="mt-1 text-[38px] font-black sm:text-[52px] tracking-tight" style={{ color: theme.text }}>
+            <h1 className="mt-0.5 text-2xl font-black sm:text-4xl lg:text-5xl tracking-tight" style={{ color: theme.text }}>
               Relax & Distract
             </h1>
           </div>
@@ -562,16 +562,16 @@ function Games() {
 
         {/* SCORE */}
         <div
-          className="mt-8 rounded-3xl p-6 shadow-xs border transition-colors duration-500"
+          className="mt-4 sm:mt-8 rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xs border transition-colors duration-500"
           style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
         >
-          <h2 className="text-[28px] font-black" style={{ color: theme.text }}>
+          <h2 className="text-xl sm:text-[28px] font-black" style={{ color: theme.text }}>
             Calm Score: <span style={{ color: theme.accent }}>{score}</span>
           </h2>
         </div>
 
         {/* GAME BUTTONS */}
-        <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="mt-5 sm:mt-10 grid gap-3 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5">
           {games.map((game, index) => {
             const Icon = game.icon;
             const isSelected = activeGame === index;
@@ -579,7 +579,7 @@ function Games() {
               <button
                 key={index}
                 onClick={() => setActiveGame(index)}
-                className="rounded-[30px] border-2 p-5 text-left transition-all duration-300 shadow-xs"
+                className="rounded-[20px] sm:rounded-[30px] border-2 p-3.5 sm:p-5 text-left transition-all duration-300 shadow-xs"
                 style={{
                   backgroundColor: isSelected ? theme.soft : theme.cardBg,
                   borderColor: isSelected ? theme.accent : theme.border,
@@ -587,16 +587,16 @@ function Games() {
                 }}
               >
                 <div
-                  className="flex h-14 w-14 items-center justify-center rounded-2xl"
+                  className="flex h-10 w-10 sm:h-14 sm:w-14 items-center justify-center rounded-xl sm:rounded-2xl"
                   style={{ backgroundColor: theme.accent + "22" }}
                 >
                   <Icon
-                    size={28}
+                    size={20}
                     style={{ color: theme.accent }}
                   />
                 </div>
 
-                <h3 className="mt-5 text-[20px] font-black" style={{ color: theme.text }}>
+                <h3 className="mt-3 sm:mt-5 text-xs sm:text-[20px] font-black" style={{ color: theme.text }}>
                   {game.title}
                 </h3>
               </button>
@@ -606,10 +606,10 @@ function Games() {
 
         {/* ACTIVE GAME */}
         <div
-          className="mt-10 rounded-[36px] p-8 shadow-xs border transition-colors duration-500"
+          className="mt-6 sm:mt-10 rounded-[24px] sm:rounded-[36px] p-4 sm:p-8 shadow-xs border transition-colors duration-500"
           style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
         >
-          <h2 className="text-[34px] font-black" style={{ color: theme.text }}>
+          <h2 className="text-xl sm:text-[34px] font-black" style={{ color: theme.text }}>
             {games[activeGame].title}
           </h2>
 

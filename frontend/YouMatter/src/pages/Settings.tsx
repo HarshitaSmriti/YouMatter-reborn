@@ -6,8 +6,6 @@ import {
   Bell,
   Moon,
   Shield,
-  Volume2,
-  Heart,
   Lock,
   Smartphone,
 } from "lucide-react";
@@ -39,27 +37,27 @@ function Settings() {
     >
       <Sidebar />
 
-      <main className="flex-1 px-4 py-6 sm:px-8">
+      <main className="flex-1 px-3.5 py-4 sm:px-8">
         {/* HEADER */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <button
             onClick={() => navigate("/home")}
-            className="flex h-11 w-11 items-center justify-center rounded-2xl border shadow-xs transition hover:opacity-80 active:scale-95"
+            className="flex h-9 w-9 sm:h-11 sm:w-11 items-center justify-center rounded-xl sm:rounded-2xl border shadow-xs transition hover:opacity-80 active:scale-95"
             style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
           >
             <ArrowLeft
-              size={18}
+              size={16}
               style={{ color: theme.accent }}
             />
           </button>
 
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest" style={{ color: theme.accent }}>
+            <p className="text-[11px] sm:text-xs font-bold uppercase tracking-widest" style={{ color: theme.accent }}>
               Preferences & Privacy
             </p>
 
             <h1
-              className="mt-1 text-[36px] font-black sm:text-[48px] transition-colors duration-500 tracking-tight"
+              className="mt-0.5 text-2xl font-black sm:text-4xl lg:text-5xl transition-colors duration-500 tracking-tight"
               style={{ color: theme.text }}
             >
               Settings
@@ -69,12 +67,12 @@ function Settings() {
 
         {/* PROFILE */}
         <div
-          className="mt-8 rounded-[32px] p-8 border shadow-xs transition-all duration-500"
+          className="mt-5 sm:mt-8 rounded-[24px] sm:rounded-[32px] p-4 sm:p-8 border shadow-xs transition-all duration-500"
           style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
         >
-          <div className="flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
             <div
-              className="flex h-24 w-24 items-center justify-center rounded-full font-black text-3xl text-white shadow-md transition-colors duration-500"
+              className="flex h-16 w-16 sm:h-24 sm:w-24 items-center justify-center rounded-full font-black text-xl sm:text-3xl text-white shadow-md transition-colors duration-500"
               style={{ backgroundColor: theme.accent }}
             >
               {userName.charAt(0).toUpperCase()}
@@ -82,13 +80,13 @@ function Settings() {
 
             <div>
               <h2
-                className="text-[32px] font-black sm:text-[40px] tracking-tight transition-colors duration-500"
+                className="text-xl font-black sm:text-[40px] tracking-tight transition-colors duration-500"
                 style={{ color: theme.text }}
               >
                 {userName}
               </h2>
 
-              <p className="mt-1 text-sm font-semibold" style={{ color: theme.subtext }}>
+              <p className="mt-0.5 text-xs sm:text-sm font-semibold" style={{ color: theme.subtext }}>
                 Your safe mental wellness journey
               </p>
 
@@ -328,71 +326,6 @@ function Settings() {
                 </div>
                 <p className="mt-3 text-sm leading-7 font-medium" style={{ color: theme.subtext }}>
                   Manage login sessions and connected devices.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* WELLNESS */}
-          <div
-            className="rounded-[36px] p-7 shadow-xs border transition-colors duration-500"
-            style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
-          >
-            <div className="flex items-center gap-4">
-              <div
-                className="flex h-16 w-16 items-center justify-center rounded-2xl"
-                style={{ backgroundColor: theme.accent + "22" }}
-              >
-                <Heart size={30} style={{ color: theme.accent }} />
-              </div>
-
-              <div>
-                <h3 className="text-[28px] font-black" style={{ color: theme.text }}>
-                  Wellness Preferences
-                </h3>
-                <p className="text-sm font-medium" style={{ color: theme.subtext }}>
-                  Personalize your calm space
-                </p>
-              </div>
-            </div>
-
-            <div className="mt-8 space-y-4">
-              <div
-                className="rounded-3xl p-5 border"
-                style={{ backgroundColor: theme.soft, borderColor: theme.border }}
-              >
-                <p className="font-bold" style={{ color: theme.text }}>
-                  Daily Motivation
-                </p>
-                <p className="mt-3 text-sm leading-7 font-medium" style={{ color: theme.subtext }}>
-                  Receive gentle reminders and emotional encouragement throughout the day.
-                </p>
-              </div>
-
-              <div
-                className="rounded-3xl p-5 border"
-                style={{ backgroundColor: theme.soft, borderColor: theme.border }}
-              >
-                <p className="font-bold" style={{ color: theme.text }}>
-                  Calm Sounds
-                </p>
-                <p className="mt-3 text-sm leading-7 font-medium" style={{ color: theme.subtext }}>
-                  Enable relaxing ambient sounds during breathing exercises and games.
-                </p>
-              </div>
-
-              <div
-                className="rounded-3xl p-5 border"
-                style={{ backgroundColor: theme.soft, borderColor: theme.border }}
-              >
-                <div className="flex items-center gap-3">
-                  <Volume2 size={20} style={{ color: theme.accent }} />
-                  <p className="font-bold" style={{ color: theme.text }}>
-                    Soft Interaction Audio
-                  </p>
-                </div>
-                <p className="mt-3 text-sm leading-7 font-medium" style={{ color: theme.subtext }}>
-                  Gentle sounds when interacting with the app experience.
                 </p>
               </div>
             </div>

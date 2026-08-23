@@ -150,47 +150,47 @@ export default function MoodTracker() {
     >
       <Sidebar />
 
-      <main className="relative flex-1 px-4 py-6 sm:px-8">
+      <main className="relative flex-1 px-3.5 py-4 sm:px-8">
 
         {/* Header */}
-        <div className="flex items-center gap-4 mb-5">
+        <div className="flex items-center gap-3 sm:gap-4 mb-3 sm:mb-5">
           <button
             onClick={() => navigate("/home")}
-            className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-2xl border transition-opacity hover:opacity-80 active:scale-95"
+            className="flex h-9 w-9 sm:h-11 sm:w-11 flex-shrink-0 items-center justify-center rounded-xl sm:rounded-2xl border transition-opacity hover:opacity-80 active:scale-95"
             style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
             aria-label="Go back"
           >
-            <ArrowLeft size={18} style={{ color: theme.accent }} />
+            <ArrowLeft size={16} style={{ color: theme.accent }} />
           </button>
           <div>
-            <p className="text-xs font-bold uppercase tracking-wide" style={{ color: theme.accent }}>Mood tracking</p>
-            <h1 className="text-3xl font-black sm:text-4xl tracking-tight" style={{ color: theme.text }}>How are you feeling?</h1>
+            <p className="text-[11px] sm:text-xs font-bold uppercase tracking-wide" style={{ color: theme.accent }}>Mood tracking</p>
+            <h1 className="text-2xl font-black sm:text-4xl tracking-tight" style={{ color: theme.text }}>How are you feeling?</h1>
           </div>
         </div>
 
-        <p className="mb-8 max-w-lg text-sm leading-7 font-medium" style={{ color: theme.subtext }}>
+        <p className="mb-5 sm:mb-8 max-w-lg text-xs leading-5 sm:text-sm sm:leading-7 font-medium" style={{ color: theme.subtext }}>
           Track your emotions gently and understand your patterns over time.
         </p>
 
         {/* Mood selector card */}
         <div
-          className="rounded-3xl p-6 shadow-xs border sm:p-8 mb-6 transition-colors duration-500"
+          className="rounded-[24px] sm:rounded-3xl p-4 sm:p-8 mb-5 sm:mb-6 shadow-xs border transition-colors duration-500"
           style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
         >
-          <div className="flex items-center gap-4 mb-6">
+          <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-6">
             <div
-              className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl"
+              className="flex h-10 w-10 sm:h-12 sm:w-12 flex-shrink-0 items-center justify-center rounded-xl sm:rounded-2xl"
               style={{ backgroundColor: theme.accent + "22" }}
             >
-              <Activity size={22} style={{ color: theme.accent }} />
+              <Activity size={20} style={{ color: theme.accent }} />
             </div>
             <div>
-              <h2 className="text-xl font-black" style={{ color: theme.text }}>Daily mood check-in</h2>
-              <p className="text-sm font-medium" style={{ color: theme.subtext }}>Select the emotion closest to how you feel right now</p>
+              <h2 className="text-lg sm:text-xl font-black" style={{ color: theme.text }}>Daily mood check-in</h2>
+              <p className="text-xs sm:text-sm font-medium" style={{ color: theme.subtext }}>Select the emotion closest to how you feel right now</p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 sm:gap-4">
             {MOOD_KEYS.map((key) => {
               const m = MOOD_CONFIG[key]; const Icon = m.Icon; const isSelected = selectedMood === key;
               return (
@@ -198,23 +198,23 @@ export default function MoodTracker() {
                   key={key}
                   onClick={() => handleSelect(key)}
                   aria-pressed={isSelected}
-                  className="flex flex-col items-start rounded-2xl p-5 text-left transition-all duration-200"
+                  className="flex flex-col items-start rounded-xl sm:rounded-2xl p-3.5 sm:p-5 text-left transition-all duration-200"
                   style={{
                     backgroundColor: isSelected ? m.accent + "22" : theme.soft,
                     borderColor: isSelected ? m.accent : theme.border,
                     borderWidth: "1.5px",
                     borderStyle: "solid",
-                    transform: isSelected ? "scale(1.03)" : "scale(1)",
+                    transform: isSelected ? "scale(1.02)" : "scale(1)",
                   }}
                 >
                   <div
-                    className="flex h-12 w-12 items-center justify-center rounded-xl mb-4"
+                    className="flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center rounded-lg sm:rounded-xl mb-2.5 sm:mb-4"
                     style={{ backgroundColor: m.accent + "22" }}
                   >
-                    <Icon size={24} style={{ color: m.accent }} />
+                    <Icon size={18} style={{ color: m.accent }} />
                   </div>
-                  <h3 className="text-base font-black mb-1" style={{ color: theme.text }}>{m.label}</h3>
-                  <p className="text-xs leading-5 font-medium" style={{ color: theme.subtext }}>{m.description}</p>
+                  <h3 className="text-xs sm:text-base font-black mb-0.5 sm:mb-1" style={{ color: theme.text }}>{m.label}</h3>
+                  <p className="text-[11px] sm:text-xs leading-4 sm:leading-5 font-medium" style={{ color: theme.subtext }}>{m.description}</p>
                 </button>
               );
             })}
@@ -222,18 +222,18 @@ export default function MoodTracker() {
 
           {selectedMood && (
             <div
-              className="mt-6 rounded-2xl p-5 flex items-center gap-4 border transition-all duration-500"
+              className="mt-4 sm:mt-6 rounded-xl sm:rounded-2xl p-3.5 sm:p-5 flex items-center gap-3 sm:gap-4 border transition-all duration-500"
               style={{ backgroundColor: theme.soft, borderColor: theme.border }}
             >
               <div
-                className="flex h-11 w-11 flex-shrink-0 items-center justify-center rounded-xl"
+                className="flex h-9 w-9 sm:h-11 sm:w-11 flex-shrink-0 items-center justify-center rounded-lg sm:rounded-xl"
                 style={{ backgroundColor: theme.accent + "22" }}
               >
-                <Activity size={22} style={{ color: theme.accent }} />
+                <Activity size={18} style={{ color: theme.accent }} />
               </div>
               <div>
-                <p className="text-xs font-bold uppercase tracking-wide mb-0.5" style={{ color: theme.accent }}>Mood recorded</p>
-                <p className="text-base font-black" style={{ color: theme.text }}>{MOOD_CONFIG[selectedMood].label} — {MOOD_CONFIG[selectedMood].description}</p>
+                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-wide mb-0.5" style={{ color: theme.accent }}>Mood recorded</p>
+                <p className="text-xs sm:text-base font-black" style={{ color: theme.text }}>{MOOD_CONFIG[selectedMood].label} — {MOOD_CONFIG[selectedMood].description}</p>
               </div>
             </div>
           )}

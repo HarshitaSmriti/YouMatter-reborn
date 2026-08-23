@@ -23,26 +23,26 @@ function Support() {
     >
       <Sidebar />
 
-      <main className="flex-1 px-4 py-6 sm:px-8">
+      <main className="flex-1 px-3.5 py-4 sm:px-8">
         {/* HEADER */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <button
             onClick={() => navigate("/home")}
-            className="flex h-12 w-12 items-center justify-center rounded-2xl border shadow-xs transition hover:opacity-80 active:scale-95"
+            className="flex h-9 w-9 sm:h-12 sm:w-12 items-center justify-center rounded-xl sm:rounded-2xl border shadow-xs transition hover:opacity-80 active:scale-95"
             style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
           >
             <ArrowLeft
-              size={20}
+              size={16}
               style={{ color: theme.accent }}
             />
           </button>
 
           <div>
-            <p className="text-xs font-bold uppercase tracking-widest" style={{ color: theme.accent }}>
+            <p className="text-[11px] sm:text-xs font-bold uppercase tracking-widest" style={{ color: theme.accent }}>
               Emotional Support Space
             </p>
 
-            <h1 className="mt-1 text-[38px] font-black sm:text-[52px] tracking-tight" style={{ color: theme.text }}>
+            <h1 className="mt-0.5 text-2xl font-black sm:text-4xl lg:text-5xl tracking-tight" style={{ color: theme.text }}>
               You Are Not Alone
             </h1>
           </div>
@@ -50,32 +50,32 @@ function Support() {
 
         {/* HERO */}
         <div
-          className="relative mt-10 overflow-hidden rounded-[40px] p-8 sm:p-12 border shadow-xs transition-colors duration-500"
+          className="relative mt-5 sm:mt-10 overflow-hidden rounded-[24px] sm:rounded-[40px] p-5 sm:p-12 border shadow-xs transition-colors duration-500"
           style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
         >
           <div className="absolute left-10 top-10 h-52 w-52 rounded-full opacity-30 blur-3xl" style={{ backgroundColor: theme.accent }} />
           <div className="absolute bottom-0 right-0 h-60 w-60 rounded-full opacity-20 blur-3xl" style={{ backgroundColor: theme.accent }} />
 
           <div className="relative z-10 max-w-[800px]">
-            <div className="flex h-20 w-20 items-center justify-center rounded-[28px]" style={{ backgroundColor: theme.accent + "22" }}>
+            <div className="flex h-12 w-12 sm:h-20 sm:w-20 items-center justify-center rounded-xl sm:rounded-[28px]" style={{ backgroundColor: theme.accent + "22" }}>
               <HeartHandshake
-                size={40}
+                size={24}
                 style={{ color: theme.accent }}
               />
             </div>
 
-            <h2 className="mt-8 text-[42px] font-black leading-tight sm:text-[58px] tracking-tight" style={{ color: theme.text }}>
+            <h2 className="mt-4 sm:mt-8 text-2xl font-black leading-tight sm:text-[58px] tracking-tight" style={{ color: theme.text }}>
               A gentle space for difficult moments
             </h2>
 
-            <p className="mt-6 max-w-[650px] text-[17px] leading-8 font-medium" style={{ color: theme.subtext }}>
+            <p className="mt-3 sm:mt-6 max-w-[650px] text-xs leading-5 sm:text-[17px] sm:leading-8 font-medium" style={{ color: theme.subtext }}>
               Support isn’t weakness. Sometimes we just need someone to listen, guide and remind us that healing takes time.
             </p>
 
-            <div className="mt-10 flex flex-wrap gap-4">
+            <div className="mt-5 sm:mt-10 flex flex-wrap gap-2.5 sm:gap-4">
               <button
                 onClick={() => navigate("/chat")}
-                className="rounded-2xl px-6 py-4 text-sm font-bold text-white shadow-md transition hover:opacity-90 active:scale-95"
+                className="rounded-xl sm:rounded-2xl px-5 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-bold text-white shadow-md transition hover:opacity-90 active:scale-95"
                 style={{ backgroundColor: theme.accent }}
               >
                 Talk To Someone
@@ -83,7 +83,7 @@ function Support() {
 
               <button
                 onClick={() => window.scrollTo({ top: 500, behavior: "smooth" })}
-                className="rounded-2xl border px-6 py-4 text-sm font-bold shadow-xs transition hover:opacity-90 active:scale-95"
+                className="rounded-xl sm:rounded-2xl border px-5 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-bold shadow-xs transition hover:opacity-90 active:scale-95"
                 style={{ backgroundColor: theme.soft, borderColor: theme.border, color: theme.text }}
               >
                 Crisis Resources

@@ -97,32 +97,32 @@ function Journal() {
     >
       <Sidebar />
 
-      <main className="flex-1 px-4 py-6 sm:px-8">
+      <main className="flex-1 px-3.5 py-4 sm:px-8">
         {/* BACK */}
         <button
           onClick={() => navigate("/home")}
-          className="mb-6 flex items-center gap-2 rounded-2xl border px-5 py-3 text-sm font-semibold shadow-xs transition hover:opacity-80 active:scale-95"
+          className="mb-4 sm:mb-6 flex items-center gap-2 rounded-xl sm:rounded-2xl border px-3.5 py-2.5 sm:px-5 sm:py-3 text-xs sm:text-sm font-semibold shadow-xs transition hover:opacity-80 active:scale-95"
           style={{ backgroundColor: theme.cardBg, borderColor: theme.border, color: theme.text }}
         >
-          <ArrowLeft size={16} />
+          <ArrowLeft size={15} />
           Back to home
         </button>
 
         {/* HEADER */}
         <div>
-          <p className="text-xs font-bold uppercase tracking-widest" style={{ color: theme.accent }}>
+          <p className="text-[11px] sm:text-xs font-bold uppercase tracking-widest" style={{ color: theme.accent }}>
             Personal journal
           </p>
-          <h1 className="mt-2 text-[36px] font-black sm:text-[48px] transition-colors duration-500 tracking-tight" style={{ color: theme.text }}>
+          <h1 className="mt-1 text-2xl font-black sm:text-4xl lg:text-5xl transition-colors duration-500 tracking-tight" style={{ color: theme.text }}>
             Reflect your thoughts
           </h1>
-          <p className="mt-3 max-w-[640px] text-[15px] leading-8 font-medium transition-colors duration-500" style={{ color: theme.subtext }}>
+          <p className="mt-1.5 max-w-[640px] text-xs leading-5 sm:text-[15px] sm:leading-8 font-medium transition-colors duration-500" style={{ color: theme.subtext }}>
             Write freely, organize emotions, and track your mental wellness journey safely.
           </p>
         </div>
 
         {/* MOOD SELECTOR */}
-        <div className="mt-6 flex flex-wrap gap-3">
+        <div className="mt-4 sm:mt-6 flex flex-wrap gap-2 sm:gap-3">
           {MOODS.map((mood) => {
             const active = mood.id === activeMood.id;
             const { Icon } = mood;
@@ -130,14 +130,14 @@ function Journal() {
               <button
                 key={mood.id}
                 onClick={() => setActiveMood(mood)}
-                className="flex items-center gap-2 rounded-full border-2 px-4 py-2 text-sm font-bold transition-all duration-200 hover:-translate-y-0.5"
+                className="flex items-center gap-1.5 rounded-full border-2 px-3 py-1.5 text-xs font-bold transition-all duration-200 hover:-translate-y-0.5"
                 style={{
                   borderColor: active ? mood.accent : theme.border,
                   color: active ? mood.accent : theme.subtext,
                   backgroundColor: active ? mood.accent + "18" : theme.cardBg,
                 }}
               >
-                <Icon size={15} />
+                <Icon size={14} />
                 {mood.label}
               </button>
             );
@@ -146,45 +146,45 @@ function Journal() {
 
         {/* CREATE JOURNAL */}
         <div
-          className="mt-8 rounded-[28px] p-6 shadow-xs border sm:p-8 transition-all duration-500"
+          className="mt-5 sm:mt-8 rounded-[24px] sm:rounded-[28px] p-4 sm:p-8 shadow-xs border transition-all duration-500"
           style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
         >
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 sm:gap-4">
             <div
-              className="flex h-12 w-12 items-center justify-center rounded-2xl transition-colors duration-500"
+              className="flex h-10 w-10 sm:h-12 sm:w-12 items-center justify-center rounded-xl sm:rounded-2xl transition-colors duration-500"
               style={{ backgroundColor: m.accent + "22" }}
             >
-              <BookOpen size={22} style={{ color: m.accent }} />
+              <BookOpen size={20} style={{ color: m.accent }} />
             </div>
             <div>
-              <h2 className="text-[22px] font-black" style={{ color: theme.text }}>New journal entry</h2>
-              <p className="text-sm font-semibold" style={{ color: m.accent }}>{m.subtitle}</p>
+              <h2 className="text-lg sm:text-[22px] font-black" style={{ color: theme.text }}>New journal entry</h2>
+              <p className="text-xs sm:text-sm font-semibold" style={{ color: m.accent }}>{m.subtitle}</p>
             </div>
           </div>
 
-          <div className="mt-7 space-y-4">
+          <div className="mt-5 sm:mt-7 space-y-3 sm:space-y-4">
             <input
               type="text"
               placeholder="Journal title..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full rounded-2xl px-5 py-4 outline-none transition-all duration-300 font-medium"
+              className="w-full rounded-xl sm:rounded-2xl px-4 py-3 sm:px-5 sm:py-4 outline-none transition-all duration-300 font-medium text-xs sm:text-base"
               style={{ backgroundColor: theme.soft, border: `1.5px solid ${theme.border}`, color: theme.text }}
             />
             <textarea
               placeholder="Write your thoughts here..."
-              rows={7}
+              rows={4}
               value={content}
               onChange={(e) => setContent(e.target.value)}
-              className="w-full resize-none rounded-3xl px-5 py-5 outline-none transition-all duration-300 font-medium"
+              className="w-full resize-none rounded-2xl sm:rounded-3xl px-4 py-3.5 sm:px-5 sm:py-5 outline-none transition-all duration-300 font-medium text-xs sm:text-base"
               style={{ backgroundColor: theme.soft, border: `1.5px solid ${theme.border}`, color: theme.text }}
             />
             <button
               onClick={addJournal}
-              className="flex items-center gap-2 rounded-2xl px-6 py-4 text-sm font-bold text-white transition-all duration-300 hover:opacity-90 active:scale-95 shadow-xs"
+              className="flex items-center gap-2 rounded-xl sm:rounded-2xl px-5 py-3 sm:px-6 sm:py-4 text-xs sm:text-sm font-bold text-white transition-all duration-300 hover:opacity-90 active:scale-95 shadow-xs"
               style={{ backgroundColor: theme.accent }}
             >
-              <Plus size={16} />
+              <Plus size={15} />
               Save journal
             </button>
           </div>
