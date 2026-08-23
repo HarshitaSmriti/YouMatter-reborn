@@ -33,6 +33,8 @@ function Journal() {
   const [content, setContent] = useState("");
   const [journals, setJournals] = useState<JournalEntry[]>([]);
   const [activeMood, setActiveMood] = useState<Mood>(MOODS[5]);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMessage, setPopupMessage] = useState("");
 
   const fetchJournals = async () => {
     try {
@@ -46,14 +48,28 @@ function Journal() {
   useEffect(() => { fetchJournals(); }, []);
 
   const addJournal = async () => {
-    if (!title.trim() || !content.trim()) return;
+    const cleanTitle = title.trim();
+    const cleanContent = content.trim();
+
+    if (!cleanContent) {
+      setPopupMessage("Please write your thoughts");
+      setShowPopup(true);
+      return;
+    }
+
+    if (!cleanTitle) {
+      setPopupMessage("Please enter a title for your journal entry.");
+      setShowPopup(true);
+      return;
+    }
+
     try {
       await api.post("/diary", {
-        title: title.trim(),
-        content: content.trim(),
+        title: cleanTitle,
+        content: cleanContent,
         mood: activeMood.id,
       });
-      fetchJournals();
+      await fetchJournals();
       setTitle("");
       setContent("");
     } catch (err) {
@@ -62,9 +78,10 @@ function Journal() {
   };
 
   const deleteJournal = async (id: number) => {
-    setJournals((prev) => prev.filter((j) => j.id !== id));
     try {
       await api.delete(`/diary/${id}`);
+      setJournals((prev) => prev.filter((j) => j.id !== id));
+      await fetchJournals();
     } catch (err) {
       console.error("Failed to delete journal entry:", err);
       fetchJournals();
@@ -258,6 +275,36 @@ function Journal() {
           )}
         </div>
       </main>
+
+      {/* POPUP MODAL */}
+      {showPopup && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-xs p-4 animate-in fade-in duration-200">
+          <div
+            className="w-full max-w-sm rounded-[28px] p-6 shadow-2xl border text-center transition-all duration-300 transform scale-100"
+            style={{ backgroundColor: theme.cardBg, borderColor: theme.border }}
+          >
+            <div
+              className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-2xl"
+              style={{ backgroundColor: theme.soft }}
+            >
+              <BookOpen size={22} style={{ color: theme.accent }} />
+            </div>
+            <h3 className="text-xl font-black" style={{ color: theme.text }}>
+              Journal Notice
+            </h3>
+            <p className="mt-2 text-sm font-semibold leading-relaxed" style={{ color: theme.subtext }}>
+              {popupMessage}
+            </p>
+            <button
+              onClick={() => setShowPopup(false)}
+              className="mt-6 w-full rounded-2xl py-3.5 text-sm font-bold text-white transition-all duration-200 hover:opacity-90 active:scale-95 shadow-xs"
+              style={{ backgroundColor: theme.accent }}
+            >
+              Got it
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
