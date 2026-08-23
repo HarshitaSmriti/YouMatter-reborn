@@ -77,11 +77,14 @@ function Journal() {
     }
   };
 
-  const deleteJournal = async (id: number) => {
+  const deleteJournal = async (id: number | string) => {
+    setJournals((prev) => prev.filter((j) => String(j.id) !== String(id)));
     try {
       await api.delete(`/diary/${id}`);
-      setJournals((prev) => prev.filter((j) => j.id !== id));
-      await fetchJournals();
+      const res = await api.get("/diary");
+      if (res.data && Array.isArray(res.data.data)) {
+        setJournals(res.data.data);
+      }
     } catch (err) {
       console.error("Failed to delete journal entry:", err);
       fetchJournals();

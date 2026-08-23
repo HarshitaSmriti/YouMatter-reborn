@@ -14,8 +14,8 @@ function AuthLayout({
   children,
 }: Props) {
   return (
-    <div className="min-h-screen bg-[#f7f5ff] flex items-center justify-center px-6">
-      <div className="w-full max-w-[1200px] grid lg:grid-cols-2 bg-white rounded-[40px] overflow-hidden shadow-2xl">
+    <div className="min-h-screen bg-[#f7f5ff] flex items-center justify-center px-3.5 py-6 sm:px-6">
+      <div className="w-full max-w-[1200px] grid lg:grid-cols-2 bg-white rounded-[28px] sm:rounded-[40px] overflow-hidden shadow-2xl">
         {/* LEFT */}
 <div className="hidden lg:flex bg-gradient-to-br from-purple-600 to-violet-500 p-14 text-white flex-col justify-between relative overflow-hidden">
   {/* TOP */}
@@ -54,13 +54,13 @@ function AuthLayout({
 </div>
 
         {/* RIGHT */}
-        <div className="p-8 lg:p-16 flex items-center">
+        <div className="p-6 sm:p-10 lg:p-16 flex items-center">
           <div className="w-full">
-            <h2 className="text-4xl font-bold text-gray-900 mb-3">
+            <h2 className="text-2xl sm:text-4xl font-bold text-gray-900 mb-2 sm:mb-3">
               {title}
             </h2>
 
-            <p className="text-gray-500 mb-10">
+            <p className="text-xs sm:text-sm text-gray-500 mb-6 sm:mb-10">
               {subtitle}
             </p>
 

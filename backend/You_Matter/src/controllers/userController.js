@@ -671,18 +671,25 @@ export const deleteDiary = async (req, res, next) => {
     const { id } = req.params;
 
     const supabaseUser = getUserClient(req);
+    const queryId = /^\d+$/.test(id) ? parseInt(id, 10) : id;
 
-    const { error } = await supabaseUser
+    const { error, count } = await supabaseUser
       .from('diary_entries')
-      .delete()
-      .eq('id', id)
+      .delete({ count: 'exact' })
+      .eq('id', queryId)
       .eq('user_id', user_id);
 
-    if (error) throw error;
+    if (error) {
+      console.error("Supabase delete diary error:", error.message);
+      throw error;
+    }
 
-    res.json({ message: "Diary deleted" });
+    console.log(`Deleted diary entry ${id} (queryId: ${queryId}) for user ${user_id}. Rows deleted:`, count);
+
+    res.json({ message: "Diary deleted", count });
 
   } catch (err) {
+    console.error("DELETE DIARY ERROR:", err.message);
     next(err);
   }
 };
